@@ -9,14 +9,14 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("suporte@bwb.pt");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("Admin123!");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Se já tiver token, salta logo para o dashboard
+  // Se já houver token em localStorage, vai directo para o dashboard
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const existing = window.localStorage.getItem("rustdesk_token");
+    const existing = window.localStorage.getItem("rustdesk_jwt");
     if (existing) {
       router.push("/dashboard");
     }
@@ -28,98 +28,85 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      if (!supabaseUrl || !anonKey) {
-        throw new Error("Variáveis NEXT_PUBLIC_SUPABASE_URL ou NEXT_PUBLIC_SUPABASE_ANON_KEY em falta.");
-      }
-
-      const res = await fetch(supabaseUrl + "/functions/v1/login", {
+      const res = await fetch(`${supabaseUrl}/functions/v1/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + anonKey,
+          "Authorization": `Bearer ${anonKey}`,
         },
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        let message = "Erro ao autenticar.";
-        try {
-          const body = await res.json();
-          if (body && typeof body.message === "string") {
-            message = body.message;
-          }
-        } catch {
-          // ignore
-        }
-        throw new Error(message);
+        setError(data.message || "Falha no login");
+        setLoading(false);
+        return;
       }
 
-      const data = await res.json();
-      const token = (data && (data.token as string | undefined)) || null;
-      if (!token) {
-        throw new Error("Resposta do servidor sem token.");
+      if (!data.token) {
+        setError("Resposta sem token.");
+        setLoading(false);
+        return;
       }
 
       if (typeof window !== "undefined") {
-        window.localStorage.setItem("rustdesk_token", token);
+        window.localStorage.setItem("rustdesk_jwt", data.token);
       }
 
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err?.message || "Erro inesperado ao autenticar.");
+      setError(err.message || "Erro inesperado.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-3xl bg-slate-900/80 border border-slate-800 shadow-2xl shadow-black/40 p-8">
-        <h1 className="text-center text-xl font-semibold text-slate-50">
-          RustDesk · Android Support <span className="text-xs text-slate-400">(v2)</span>
+    <main className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-slate-900/70 border border-slate-700 rounded-2xl p-8 shadow-xl">
+        <h1 className="text-2xl font-semibold mb-6 text-center">
+          RustDesk Android Support
         </h1>
-        <p className="mt-2 text-center text-sm text-slate-400">
-          Autentica-te com o teu utilizador Supabase para ver o QR e os dispositivos Android.
-        </p>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-slate-300">Email</label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm mb-1">Email</label>
             <input
+              className="w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
               type="email"
-              className="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               value={email}
-              onChange={e => setEmail(e.target.value)}
-              autoComplete="email"
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
             />
           </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-slate-300">Password</label>
+          <div>
+            <label className="block text-sm mb-1">Password</label>
             <input
+              className="w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
               type="password"
-              className="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
             />
           </div>
 
           {error && (
-            <div className="rounded-xl border border-red-600 bg-red-950/70 px-3 py-2 text-xs text-red-200">
+            <p className="text-sm text-red-400 bg-red-950/40 border border-red-900 rounded-md px-3 py-2">
               {error}
-            </div>
+            </p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 disabled:cursor-not-allowed text-sm font-semibold text-slate-900 py-2 transition-colors"
+            className="w-full rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed px-3 py-2 text-sm font-medium transition"
           >
-            {loading ? "A autenticar..." : "Entrar"}
+            {loading ? "A entrar..." : "Entrar"}
           </button>
         </form>
       </div>
-    </div>
+    </main>
   );
 }

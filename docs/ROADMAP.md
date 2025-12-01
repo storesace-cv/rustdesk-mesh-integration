@@ -1,0 +1,208 @@
+# ROADMAP — RustDesk ↔ MeshCentral ↔ Supabase
+
+Este ficheiro serve de guia para o Codex / Softgen.ai continuar o trabalho.
+
+---
+
+## 1. Estado actual (baseline)
+
+### 1.1 Frontend (Next.js)
+
+- App Next.js (App Router) com:
+  - `/` – página de login:
+    - Chama Edge Function `login` em `functions/v1/login`.
+    - Usa `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+    - Guarda o `token` JWT em `localStorage` (`rustdesk_jwt`).
+  - `/dashboard` – página principal:
+    - Lê o `rustdesk_jwt` do `localStorage`.
+    - Gera QR-Code com:
+      - host: `rustdesk.bwb.pt`
+      - key: `Rs16v4T5zElCIsxbcAn39LwRYniVi5EQbXAgLVqWFYk=`
+    - Chama `functions/v1/get-devices` com:
+      - `Authorization: Bearer <jwt do utilizador>`
+      - `apikey: <anon key>`
+    - Agrupa dispositivos em:
+      - `"Dispositivos por Adotar"` – quando `notes` está vazio.
+      - `<Grupo>` – quando `notes` = `"Grupo | ..."`
+      - `<Grupo>` + `<SubGrupo>` – quando `notes` = `"Grupo | SubGrupo | ..."`
+    - UI:
+      - Grupos e subgrupos colapsáveis.
+      - Cards por dispositivo com `device_id`, `owner` e `notes`.
+
+### 1.2 Supabase (estrutura esperada)
+
+Tabelas (em `public`):
+
+- `mesh_users`
+- `android_devices`
+- `android_devices_expanded` (view materializada / view normal — a decidir)
+
+Edge Functions previstas:
+
+- `login` – autentica e devolve JWT de sessão.
+- `get-devices` – devolve dispositivos do utilizador autenticado.
+- `register-device` – regista/actualiza device (device_id, owner, notes).
+- `remove-device` – faz soft-delete ou remove device.
+
+**Nota:** a configuração exacta (colunas, constraints, RLS) deve ser revista com base
+no estado actual do projecto no painel Supabase. O SQL deste repositório é um *baseline*.
+
+### 1.3 MeshCentral
+
+- No droplet, existe:
+  - `/opt/meshcentral/meshcentral-data/android-users.json`
+  - `/opt/meshcentral/meshcentral-files/ANDROID/<User>/devices.json`
+- Foi criado:
+  - `/opt/meshcentral/sync-devices.sh` (script bash),
+  - Serviço `mesh-android-qr-http.service` (já não será necessário depois de migrar para o Next.js).
+
+O comportamento actual (observado pelos logs):
+
+- `android-folders.js` cria estrutura de pastas ANDROID/Admin, ANDROID/Jorge, etc.
+- `sync-devices.sh` percorre `android-users.json` e vai lendo `devices.json` de cada pasta.
+- Se o `devices.json` não tiver `device_id`, o script ignora.
+
+---
+
+## 2. Tarefas para o Codex
+
+### 2.1 Sincronização MeshCentral → Supabase (script `sync-devices.sh`)
+
+Objectivo: tornar o script 100% funcional e idempotente.
+
+1. Abrir `scripts/sync-devices.sh`:
+   - Ler `android-users.json` a partir de `/opt/meshcentral/meshcentral-data`.
+   - Para cada utilizador:
+     - Ler `devices.json` em `/opt/meshcentral/meshcentral-files/ANDROID/<folderName>/devices.json`.
+     - Cada `device` deve ter pelo menos:
+       - `device_id`
+       - (idealmente) campos adicionais que o RustDesk fornece.
+   - Para cada device com `device_id`:
+     - chamar `register-device` (Edge Function) ou fazer `INSERT ... ON CONFLICT ...` directo na tabela `android_devices`.
+
+2. Resolver autenticação:
+   - Escolher uma destas opções:
+     - (A) Usar `service_role` nas chamadas internas (cuidado com segurança).
+     - (B) Criar um JWT específico para sync (`sync_devices_jwt`) com claims bem definidas.
+   - Guardar as credenciais em `/opt/meshcentral/meshcentral-data/sync-env.sh` (por exemplo) e fazer `source` no início do script.
+
+3. Garantir que:
+   - O script é idempotente (pode correr de X em X minutos).
+   - Faz `upsert` (não duplica dispositivos).
+   - Preenche pelo menos:
+     - `device_id`
+     - `owner` (ligado ao mesh_user correspondente)
+     - `notes` (pode vir vazio → “Dispositivo por Adotar”).
+
+### 2.2 Edge Functions
+
+Rever e finalizar as funções em:
+
+- `supabase/functions/login/index.ts`
+- `supabase/functions/get-devices/index.ts`
+- `supabase/functions/register-device/index.ts`
+- `supabase/functions/remove-device/index.ts`
+
+Checklist:
+
+1. **login**
+   - Deve funcionar com apenas:
+     - `Authorization: Bearer <anon key>`
+     - body: `{ "email": "...", "password": "..." }`
+   - Usar `Deno.env.get("SUPABASE_URL")` e `Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")`.
+
+2. **get-devices**
+   - Validar JWT (enviado pelo frontend como `Authorization: Bearer <session_jwt>`).
+   - Extrair `sub` (user id supabase) e mapear para `mesh_users`.
+   - Devolver lista de `android_devices` do owner.
+
+3. **register-device**
+   - Autenticação:
+     - ou via JWT (se for chamado pelo frontend),
+     - ou via `service_role` (se for chamado apenas por scripts internos).
+   - Actuar sobre a tabela `android_devices`:
+     - `INSERT ... ON CONFLICT (device_id, owner) DO UPDATE`
+     - Manter `notes` e timestamps.
+
+4. **remove-device**
+   - Preferível soft-delete (ex: `deleted_at`).
+   - Filtrar por `owner` = utilizador autenticado.
+
+### 2.3 Frontend
+
+1. Login:
+   - Confirmar se o fluxo actual é o desejado:
+     - Se já existir `rustdesk_jwt`, saltar login.
+     - Caso o token expire, forçar novo login.
+   - Melhorar mensagens de erro com base no `error.message` vindo da função `login`.
+
+2. Dashboard:
+   - Garante que:
+     - Em ambiente de erro (Edge Function down, etc.), o dashboard continua a abrir.
+     - Se `devices` vier `[]`, mostrar:
+       - “Sem dispositivos adoptados (ainda)” em vez de stack trace.
+
+3. Adopção / edição de `notes` (TODO):
+   - Adicionar:
+     - Botão “Editar” em cada card.
+     - Modal simples para alterar o campo `notes`.
+   - Enviar os dados para `register-device` de forma a actualizar o registo.
+
+### 2.4 Organização de grupos e subgrupos
+
+A regra acordada:
+
+- `notes = "Grupo | Comentário"` → Grupo simples.
+- `notes = "Grupo | SubGrupo | Comentário"` → Grupo + SubGrupo.
+- `notes = ""` ou `NULL` → grupo especial `"Dispositivos por Adotar"`.
+
+Tarefas:
+
+- Garantir que esta regra é:
+  - Documentada no README principal (frontend).
+  - Validada no backend (por exemplo, separar em colunas calculadas em `android_devices_expanded`).
+
+---
+
+## 3. Scripts de deployment
+
+### 3.1 update_from_github.sh (droplet)
+
+- Localização sugerida no droplet:
+  - `/opt/rustdesk-frontend/scripts/update_from_github.sh`
+- Responsabilidades:
+  - `cd /opt/rustdesk-frontend`
+  - `git fetch && git pull origin my-rustdesk-mesh-integration`
+  - `npm install`
+  - `npm run build`
+  - `systemctl restart rustdesk-frontend.service`
+
+### 3.2 update_to_droplet.sh (Mac)
+
+- Localização:
+  - raiz do repositório local.
+- Responsabilidades:
+  - `git add .`
+  - `git commit -m "..."` (mensagem default se não for fornecida).
+  - `git push origin my-rustdesk-mesh-integration`
+  - `ssh root@142.93.106.94 "bash /opt/rustdesk-frontend/scripts/update_from_github.sh"`
+
+---
+
+## 4. Pontos sensíveis / a rever
+
+- Gestão de chaves:
+  - **Nunca** commitar `service_role`.
+  - Usar apenas `anon` no frontend.
+- JWTs:
+  - Clarificar se as Edge Functions validam:
+    - JWT de contexto (automático Supabase),
+    - ou JWT manual passado pelo frontend.
+- RLS:
+  - Confirmar que `android_devices` e `mesh_users` estão protegidas:
+    - Cada utilizador só vê os seus devices.
+
+---
+
+Este ROADMAP deve ser actualizado pelo Codex após cada alteração relevante
+no esquema da base de dados, nas Edge Functions ou no frontend.
