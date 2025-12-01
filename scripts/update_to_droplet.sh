@@ -1,17 +1,34 @@
 #!/usr/bin/env bash
+#
+# Para correr no Mac.
+# Faz commit + push para o branch my-rustdesk-mesh-integration e depois
+# ordena ao droplet que corra update_from_github.sh.
+
 set -euo pipefail
 
-REMOTE_USER="root"
-REMOTE_HOST="142.93.106.94"
-REMOTE_DIR="/opt/rustdesk-mesh-integration"
+BRANCH="my-rustdesk-mesh-integration"
+REMOTE="origin"
+MESSAGE="${1:-Sync local changes}"
+DROPLET_HOST="root@142.93.106.94"
+REMOTE_SCRIPT="/opt/rustdesk-frontend/scripts/update_from_github.sh"
 
-echo "[update_to_droplet] A sincronizar código para ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR} ..."
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
 
-rsync -avz --delete \
-  --exclude ".git" \
-  --exclude "node_modules" \
-  --exclude ".next" \
-  ./ "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/"
+echo "[update_to_droplet] Repo root: $ROOT_DIR"
 
-echo "[update_to_droplet] Sync concluído."
-echo "Lembra-te de recompilar e reiniciar o serviço no droplet se necessário."
+git status
+
+echo "[update_to_droplet] git add…"
+git add .
+
+echo "[update_to_droplet] git commit…"
+git commit -m "$MESSAGE" || echo "[update_to_droplet] Nada para commitar."
+
+echo "[update_to_droplet] git push…"
+git push "$REMOTE" "$BRANCH"
+
+echo "[update_to_droplet] SSH droplet + update_from_github…"
+ssh "$DROPLET_HOST" "bash '$REMOTE_SCRIPT'"
+
+echo "[update_to_droplet] DONE."
