@@ -1,0 +1,6 @@
+#!/bin/bash
+# HISTORICAL — DO NOT RUN IN PRODUCTION
+# Legacy setup script (EXAMPLE). Kept for reference only.
+
+mkdir -p /opt/rustdesk-mesh
+chmod -R 755 /opt/rustdesk-mesh
