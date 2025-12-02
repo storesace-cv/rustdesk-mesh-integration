@@ -1,44 +1,34 @@
 #!/usr/bin/env bash
 #
-# Para correr no droplet (142.93.106.94)
-# Actualiza o código a partir do GitHub e reinicia o serviço Next.js.
+# Actualiza o branch local "my-rustdesk-mesh-integration"
+# a partir do branch remoto "origin/main", SEM NUNCA fazer push.
+# Apenas prepara o teu branch local para depois ser enviado para o droplet.
 
 set -euo pipefail
 
-PROJECT_DIR="/opt/rustdesk-frontend"
-REPO_URL="https://github.com/storesace-cv/rustdesk-mesh-integration.git"
-BRANCH="my-rustdesk-mesh-integration"
-SERVICE_NAME="rustdesk-frontend.service"
+BRANCH_LOCAL="my-rustdesk-mesh-integration"
+BRANCH_REMOTE="main"
+REPO_DIR="$(pwd)"
 
-echo "[update_from_github] Project dir: $PROJECT_DIR"
+echo "[update_local_branch] Repositório: $REPO_DIR"
+echo "[update_local_branch] A atualizar $BRANCH_LOCAL a partir de origin/$BRANCH_REMOTE"
 
-mkdir -p "$PROJECT_DIR"
-cd "$PROJECT_DIR"
+# Garantir que estamos no repositório
+cd "$REPO_DIR"
 
-if [ ! -d ".git" ]; then
-  echo "[update_from_github] Inicializar repositório Git…"
-  git init
-  git remote add origin "$REPO_URL" || true
-fi
+# Buscar atualizações do GitHub
+echo "[update_local_branch] git fetch origin"
+git fetch origin
 
-echo "[update_from_github] Fetch + checkout branch $BRANCH…"
-git fetch origin || true
-if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
-  git checkout "$BRANCH"
+# Garantir que o branch local existe
+if ! git show-ref --verify --quiet "refs/heads/$BRANCH_LOCAL"; then
+  echo "[update_local_branch] Branch local não existe. Criar a partir de origin/$BRANCH_REMOTE"
+  git checkout -b "$BRANCH_LOCAL" "origin/$BRANCH_REMOTE"
 else
-  git checkout -b "$BRANCH"
+  echo "[update_local_branch] Checkout para $BRANCH_LOCAL"
+  git checkout "$BRANCH_LOCAL"
+  echo "[update_local_branch] Merge de origin/$BRANCH_REMOTE → $BRANCH_LOCAL"
+  git merge --ff-only "origin/$BRANCH_REMOTE"
 fi
 
-echo "[update_from_github] Pull…"
-git pull origin "$BRANCH" || true
-
-echo "[update_from_github] npm install…"
-npm install
-
-echo "[update_from_github] npm run build…"
-npm run build
-
-echo "[update_from_github] restart service $SERVICE_NAME…"
-systemctl restart "$SERVICE_NAME"
-
-echo "[update_from_github] DONE."
+echo "[update_local_branch] DONE. Branch '$BRANCH_LOCAL' agora está sincronizado com 'origin/$BRANCH_REMOTE'."
