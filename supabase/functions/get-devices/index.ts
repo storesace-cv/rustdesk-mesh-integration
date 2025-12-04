@@ -1,176 +1,49 @@
+export const config = { verify_jwt: true };
 
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 
-function corsHeaders(req: Request) {
-  const origin = req.headers.get("origin") || "*";
-  const allowed = Deno.env.get("SUPABASE_CORS_ALLOWED_ORIGIN") || origin;
-  return {
-    "Access-Control-Allow-Origin": allowed,
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Credentials": "true",
-  };
-}
-
-function getTokenFromAuthHeader(req: Request): string | null {
-  const auth = req.headers.get("authorization") || req.headers.get("Authorization");
-  if (!auth) return null;
-  const parts = auth.split(" ");
-  if (parts.length === 2 && parts[0] === "Bearer") return parts[1];
-  return null;
-}
-
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders(req) });
-  }
-
-  try {
-    const jwt = getTokenFromAuthHeader(req);
-    if (!jwt) {
-      return new Response(
-        JSON.stringify({ code: 401, message: "Missing Bearer JWT" }),
-        { status: 401, headers: { ...corsHeaders(req), "Content-Type": "application/json" } },
-      );
-    }
-
-    // Validate the JWT using Supabase
-    const supabaseJs = await import("https://esm.sh//supabase-js");
-    const supabase = supabaseJs.createClient(supabaseUrl, serviceRoleKey, {
-      global: { headers: { Authorization: `Bearer ${jwt}` } },
-    });
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ code: 401, message: "JWT inválido ou sessão expirada." }),
-        { status: 401, headers: { ...corsHeaders(req), "Content-Type": "application/json" } },
-      );
-    }
-
-    // Map user.id -> mesh_users
-    const { data: meshUser, error: meshErr } = await supabase
-      .from("mesh_users")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
-
-    if (meshErr || !meshUser) {
-      return new Response(
-        JSON.stringify({ code: 404, message: "Utilizador Mesh não encontrado." }),
-        { status: 404, headers: { ...corsHeaders(req), "Content-Type": "application/json" } },
-      );
-    }
-
-    const { data: devices, error: devErr } = await supabase
-      .from("android_devices")
-      .select("*")
-      .eq("owner", meshUser.mesh_username)
-      .order("created_at", { ascending: true });
-
-    if (devErr) {
-      console.error("get-devices error:", devErr);
-      return new Response(
-        JSON.stringify({ code: 500, message: "Erro a carregar dispositivos." }),
-        { status: 500, headers: { ...corsHeaders(req), "Content-Type": "application/json" } },
-      );
-    }
-
-    return new Response(JSON.stringify(devices ?? []), {
-      status: 200,
-      headers: { ...corsHeaders(req), "Content-Type": "application/json" },
-    });
-  } catch (err) {
-    console.error("get-devices error:", err);
-    return new Response(
-      JSON.stringify({ code: 500, message: "Erro interno na função get-devices." }),
-      { status: 500, headers: corsHeaders(new Request("/")) },
-    );
-  }
+addEventListener("fetch", (event) => {
+  event.respondWith(handleRequest(event.request));
 });
-import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-function getTokenFromAuthHeader(req: Request): string | null {
-  const auth = req.headers.get("authorization") || req.headers.get("Authorization");
-  if (!auth) return null;
-  const parts = auth.split(" ");
-  if (parts.length === 2 && parts[0] === "Bearer") return parts[1];
-  return null;
+function extractBearer(req: Request): string | null {
+  const h = req.headers.get("authorization") || "";
+  const m = h.match(/Bearer\s+(.+)/i);
+  return m ? m[1] : null;
 }
 
-Deno.serve(async (req) => {
+async function handleRequest(req: Request) {
   try {
-    const jwt = getTokenFromAuthHeader(req);
+    if (req.method !== "GET") {
+      return new Response(JSON.stringify({ error: "method_not_allowed" }), { status: 405, headers: { "Content-Type": "application/json" } });
+    }
+
+    const jwt = extractBearer(req);
     if (!jwt) {
-      return new Response(
-        JSON.stringify({ code: 401, message: "Missing Bearer JWT" }),
-        { status: 401 },
-      );
+      return new Response(JSON.stringify({ code: 401, message: "Missing Bearer JWT" }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
 
-    // Validar o JWT utilizando o próprio Supabase
-    const supabaseJs = await import("https://esm.sh//supabase-js");
-    const supabase = supabaseJs.createClient(supabaseUrl, serviceRoleKey, {
-      global: { headers: { Authorization: `Bearer ${jwt}` } },
+    // Forward query string and path to PostgREST
+    // Build URL for PostgREST endpoint (android_devices table)
+    const url = new URL(`${SUPABASE_URL}/rest/v1/android_devices`);
+    // propagate query params from incoming request
+    const incomingUrl = new URL(req.url);
+    incomingUrl.searchParams.forEach((v, k) => url.searchParams.append(k, v));
+
+    const resp = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${jwt}`,
+        Accept: "application/json",
+      },
     });
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ code: 401, message: "JWT inválido ou sessão expirada." }),
-        { status: 401 },
-      );
-    }
-
-    // Mapear user.id -> mesh_users
-    const { data: meshUser, error: meshErr } = await supabase
-      .from("mesh_users")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
-
-    if (meshErr || !meshUser) {
-      return new Response(
-        JSON.stringify({ code: 404, message: "Utilizador Mesh não encontrado." }),
-        { status: 404 },
-      );
-    }
-
-    const { data: devices, error: devErr } = await supabase
-      .from("android_devices")
-      .select("*")
-      .eq("owner", meshUser.mesh_username)
-      .order("created_at", { ascending: true });
-
-    if (devErr) {
-      console.error("get-devices error:", devErr);
-      return new Response(
-        JSON.stringify({ code: 500, message: "Erro a carregar dispositivos." }),
-        { status: 500 },
-      );
-    }
-
-    return new Response(JSON.stringify(devices ?? []), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    const body = await resp.text();
+    return new Response(body, { status: resp.status, headers: { "Content-Type": "application/json" } });
   } catch (err) {
-    console.error("get-devices error:", err);
-    return new Response(
-      JSON.stringify({ code: 500, message: "Erro interno na função get-devices." }),
-      { status: 500 },
-    );
+    console.error("[get-devices] error:", err);
+    return new Response(JSON.stringify({ code: 500, message: "Internal error" }), { status: 500, headers: { "Content-Type": "application/json" } });
   }
-});
+}
