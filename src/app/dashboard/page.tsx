@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 
+import { GroupableDevice, groupDevices } from "@/lib/grouping";
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
@@ -11,49 +13,11 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const RUSTDESK_HOST = "rustdesk.bwb.pt";
 const RUSTDESK_KEY = "Rs16v4T5zElCIsxbcAn39LwRYniVi5EQbXAgLVqWFYk=";
 
-type AndroidDevice = {
-  id: string;
-  device_id: string;
-  owner: string;
-  notes: string | null;
-};
-
-type GroupedDevices = {
-  [group: string]: {
-    [subgroup: string]: AndroidDevice[];
-  };
-};
-
-function groupDevices(devices: AndroidDevice[]): GroupedDevices {
-  const result: GroupedDevices = {};
-
-  for (const d of devices) {
-    let group = "Dispositivos por Adotar";
-    let subgroup = "";
-
-    if (d.notes && d.notes.trim().length > 0) {
-      const parts = d.notes.split("|").map((p) => p.trim()).filter(Boolean);
-      if (parts.length === 1) {
-        group = parts[0];
-      } else if (parts.length >= 2) {
-        group = parts[0];
-        subgroup = parts[1];
-      }
-    }
-
-    if (!result[group]) result[group] = {};
-    if (!result[group][subgroup]) result[group][subgroup] = [];
-    result[group][subgroup].push(d);
-  }
-
-  return result;
-}
-
 export default function DashboardPage() {
   const router = useRouter();
   const [jwt, setJwt] = useState<string | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
-  const [devices, setDevices] = useState<AndroidDevice[]>([]);
+  const [devices, setDevices] = useState<GroupableDevice[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
@@ -127,7 +91,7 @@ export default function DashboardPage() {
           return;
         }
 
-        setDevices(data as AndroidDevice[]);
+        setDevices(data as GroupableDevice[]);
       } catch (err: any) {
         console.error("Erro get-devices:", err);
         setErrorMsg("Erro ao carregar dispositivos.");
