@@ -126,9 +126,9 @@ Checklist:
     - `INSERT ... ON CONFLICT (device_id, owner) DO UPDATE`
     - Manter `notes` e timestamps.
 
-- [ ] **remove-device**
-  - Preferível soft-delete (ex: `deleted_at`).
-  - Filtrar por `owner` = utilizador autenticado.
+- [x] **remove-device**
+  - Implementada como soft-delete, limpando `owner`, `notes`, `mesh_username` e `friendly_name`, e marcando `deleted_at`.
+  - Apenas o owner autenticado remove; `service_role` pode remover dispositivos sem filtrar por owner.
 
 ### 2.3 Frontend
 

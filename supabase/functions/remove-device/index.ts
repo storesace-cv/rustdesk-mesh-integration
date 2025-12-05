@@ -39,15 +39,24 @@ async function fetchAuthUser(jwt: string) {
     throw new Error("invalid_session_payload");
   }
 
-  if (data?.role === "service_role") {
-    throw new Error("service_role_not_allowed");
-  }
-
-  return data as { id: string };
+  return { id: data.id as string, isService: data.role === "service_role" };
 }
 
-async function softDeleteDevice(deviceId: string, ownerId: string) {
-  const url = `${SUPABASE_URL}/rest/v1/android_devices?device_id=eq.${encodeURIComponent(deviceId)}&owner=eq.${encodeURIComponent(ownerId)}&deleted_at=is.null`;
+async function softDeleteDevice(
+  deviceId: string,
+  ownerId: string | null,
+  isService: boolean,
+) {
+  const filters = [
+    `device_id=eq.${encodeURIComponent(deviceId)}`,
+    "deleted_at=is.null",
+  ];
+
+  if (!isService && ownerId) {
+    filters.push(`owner=eq.${encodeURIComponent(ownerId)}`);
+  }
+
+  const url = `${SUPABASE_URL}/rest/v1/android_devices?${filters.join("&")}`;
   const resp = await fetch(url, {
     method: "PATCH",
     headers: {
@@ -56,7 +65,13 @@ async function softDeleteDevice(deviceId: string, ownerId: string) {
       "Content-Type": "application/json",
       Prefer: "return=representation",
     },
-    body: JSON.stringify({ deleted_at: new Date().toISOString() }),
+    body: JSON.stringify({
+      owner: null,
+      notes: null,
+      mesh_username: null,
+      friendly_name: null,
+      deleted_at: new Date().toISOString(),
+    }),
   });
 
   const text = await resp.text();
@@ -104,7 +119,11 @@ async function handleRequest(req: Request) {
       return jsonResponse({ error: "invalid_payload", message: "device_id is required" }, 400);
     }
 
-    const deleted = await softDeleteDevice(device_id, authUser.id);
+    const deleted = await softDeleteDevice(
+      device_id,
+      authUser.id,
+      authUser.isService,
+    );
     return jsonResponse(deleted, 200);
   } catch (err) {
     console.error("[remove-device] error:", err);
@@ -112,10 +131,6 @@ async function handleRequest(req: Request) {
 
     if (message.startsWith("invalid_session_token") || message === "invalid_session_payload") {
       return jsonResponse({ error: "unauthorized", message: "Invalid or expired session" }, 401);
-    }
-
-    if (message === "service_role_not_allowed") {
-      return jsonResponse({ error: "forbidden", message: "Service role not allowed" }, 403);
     }
 
     if (message === "device_not_found_or_not_owned") {
