@@ -89,7 +89,7 @@ async function fetchDevices(ownerId: string) {
 
 async function handleRequest(req: Request) {
   try {
-    if (req.method !== "GET") {
+    if (!["GET", "POST"].includes(req.method)) {
       return jsonResponse({ error: "method_not_allowed" }, 405);
     }
 

@@ -93,7 +93,7 @@ async function fetchMeshUserByUsername(meshUsername: string) {
 }
 
 async function fetchExistingDevice(deviceId: string) {
-  const url = `${SUPABASE_URL}/rest/v1/android_devices?device_id=eq.${encodeURIComponent(deviceId)}`;
+  const url = `${SUPABASE_URL}/rest/v1/android_devices?device_id=eq.${encodeURIComponent(deviceId)}&deleted_at=is.null`;
   const resp = await fetch(url, {
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,
@@ -130,6 +130,11 @@ async function upsertDevice(body: Record<string, unknown>) {
   }
 
   return text ? JSON.parse(text) : null;
+}
+
+function isAdopted(notes: unknown) {
+  if (typeof notes !== "string") return false;
+  return notes.trim().length > 0;
 }
 
 async function handleRequest(req: Request) {
@@ -185,14 +190,23 @@ async function handleRequest(req: Request) {
     const existing = await fetchExistingDevice(device_id);
     const payloadNotes = notes !== undefined ? notes : existing?.notes ?? null;
     const payloadFriendlyName = friendly_name ?? existing?.friendly_name ?? null;
+    const payloadLastSeen =
+      last_seen ?? existing?.last_seen_at ?? new Date().toISOString();
+
+    let ownerForUpsert = ownerId;
+    if (existing?.owner && existing.owner !== ownerId) {
+      if (isAdopted(existing.notes)) {
+        ownerForUpsert = existing.owner;
+      }
+    }
 
     const upsertPayload = {
       device_id,
-      owner: ownerId,
-      mesh_username: resolvedMeshUsername,
+      owner: ownerForUpsert,
+      mesh_username: resolvedMeshUsername ?? existing?.mesh_username ?? null,
       friendly_name: payloadFriendlyName,
       notes: payloadNotes,
-      last_seen_at: last_seen ?? new Date().toISOString(),
+      last_seen_at: payloadLastSeen,
       deleted_at: null,
     };
 
