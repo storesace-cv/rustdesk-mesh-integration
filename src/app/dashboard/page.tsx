@@ -66,20 +66,24 @@ export default function DashboardPage() {
       setErrorMsg(null);
       try {
         const res = await fetch(`${supabaseUrl}/functions/v1/get-devices`, {
-          method: "POST",
+          method: "GET",
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${jwt}`,
-            "apikey": anonKey,
+            Authorization: `Bearer ${jwt}`,
+            apikey: anonKey,
           },
         });
+
+        if (res.status === 401) {
+          setErrorMsg("Sessão expirada. Faz login novamente.");
+          handleLogout();
+          return;
+        }
 
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           console.error("get-devices falhou:", data);
-          // Mesmo que falhe, preferimos mostrar mensagem amigável
           setDevices([]);
-          setErrorMsg("Sem dispositivos adoptados (ou erro a carregar).");
+          setErrorMsg("Não foi possível carregar dispositivos. Tenta novamente.");
           return;
         }
 
@@ -87,11 +91,16 @@ export default function DashboardPage() {
         if (!Array.isArray(data)) {
           console.warn("get-devices resposta inesperada:", data);
           setDevices([]);
-          setErrorMsg("Sem dispositivos adoptados.");
+          setErrorMsg("Sem dispositivos adoptados (ainda).");
           return;
         }
 
         setDevices(data as GroupableDevice[]);
+        if (!data.length) {
+          setErrorMsg("Sem dispositivos adoptados (ainda).");
+        } else {
+          setErrorMsg(null);
+        }
       } catch (err: any) {
         console.error("Erro get-devices:", err);
         setErrorMsg("Erro ao carregar dispositivos.");
@@ -180,7 +189,7 @@ export default function DashboardPage() {
 
           {devices.length === 0 && !loading && (
             <p className="text-sm text-slate-400">
-              Sem dispositivos adoptados neste momento.
+              {errorMsg || "Sem dispositivos adoptados (ainda)."}
             </p>
           )}
 

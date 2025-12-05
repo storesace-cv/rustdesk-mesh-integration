@@ -70,7 +70,7 @@ O comportamento actual (observado pelos logs):
 
 Objectivo: tornar o script 100% funcional e idempotente.
 
-- [ ] Abrir `scripts/sync-devices.sh` e implementar a leitura de ficheiros:
+- [x] Abrir `scripts/sync-devices.sh` e implementar a leitura de ficheiros:
   - Ler `android-users.json` a partir de `/opt/meshcentral/meshcentral-data`.
   - Para cada utilizador:
     - Ler `devices.json` em `/opt/meshcentral/meshcentral-files/ANDROID/<folderName>/devices.json`.
@@ -80,13 +80,13 @@ Objectivo: tornar o script 100% funcional e idempotente.
   - Para cada device com `device_id`:
     - chamar `register-device` (Edge Function) ou fazer `INSERT ... ON CONFLICT ...` directo na tabela `android_devices`.
 
-- [ ] Resolver autenticação para o script:
+- [x] Resolver autenticação para o script:
   - Escolher uma destas opções:
     - (A) Usar `service_role` nas chamadas internas (cuidado com segurança).
     - (B) Criar um JWT específico para sync (`sync_devices_jwt`) com claims bem definidas.
   - Guardar as credenciais em `/opt/meshcentral/meshcentral-data/sync-env.sh` (por exemplo) e fazer `source` no início do script.
 
-- [ ] Garantir execução segura e idempotente:
+- [x] Garantir execução segura e idempotente:
   - O script é idempotente (pode correr de X em X minutos).
   - Faz `upsert` (não duplica dispositivos).
   - Preenche pelo menos:
@@ -105,19 +105,19 @@ Rever e finalizar as funções em:
 
 Checklist:
 
-- [ ] **login**
+- [x] **login**
   - Deve funcionar com apenas:
     - `Authorization: Bearer <anon key>`
     - body: `{ "email": "...", "password": "..." }`
   - Usar `Deno.env.get("SUPABASE_URL")` e `Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")`.
   - Estado actual: função ajustada para usar `SUPABASE_SERVICE_ROLE_KEY` e devolver `{ "token": "<access_token>" }` seguindo o SoT.
 
-- [ ] **get-devices**
+- [x] **get-devices**
   - Validar JWT (enviado pelo frontend como `Authorization: Bearer <session_jwt>`).
   - Extrair `sub` (user id supabase) e mapear para `mesh_users`.
   - Devolver lista de `android_devices` do owner.
 
-- [ ] **register-device**
+- [x] **register-device**
   - Autenticação:
     - ou via JWT (se for chamado pelo frontend),
     - ou via `service_role` (se for chamado apenas por scripts internos).
@@ -131,13 +131,13 @@ Checklist:
 
 ### 2.3 Frontend
 
-- [ ] Login:
+- [x] Login:
   - Confirmar se o fluxo actual é o desejado:
     - Se já existir `rustdesk_jwt`, saltar login.
     - Caso o token expire, forçar novo login.
   - Melhorar mensagens de erro com base no `error.message` vindo da função `login`.
 
-- [ ] Dashboard:
+- [x] Dashboard:
   - Garante que:
     - Em ambiente de erro (Edge Function down, etc.), o dashboard continua a abrir.
     - Se `devices` vier `[]`, mostrar:
