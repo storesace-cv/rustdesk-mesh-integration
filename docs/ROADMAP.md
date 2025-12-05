@@ -187,17 +187,17 @@ Estado em 2025-12-06: `supabase/config.toml` foi limpo de chaves antigas (`realt
 Estado em 2025-12-07: `scripts/update_to_droplet.sh` passou a clonar o repositório remoto automaticamente quando `REMOTE_DIR` não contém `.git`, evitando falhas de deploy por falta do repo em `/opt/rustdesk-frontend`.
 Estado em 2025-12-05: `start.sh` adicionado na raiz do repositório para servir de `ExecStart` do serviço `rustdesk-frontend.service`, carregando variáveis opcionais de `.env.production`/`.env.local` e validando a existência de `.next` antes de executar `next start`.
 
-### 3.3 update_to_droplet.sh (local)
+### 3.3 Step-* pipeline (local)
 
-- [ ] Fluxo completo de deploy para `root@142.93.106.94:/opt/rustdesk-frontend`.
-- [ ] Passos principais:
-  1. Verifica se o branch activo é `my-rustdesk-mesh-integration` e se o working tree está limpo (`SKIP_DIRTY_CHECK=1` para ignorar).
-  2. Chama `scripts/update_supabase.sh` antes de qualquer deploy (`SKIP_SUPABASE=1` para ignorar se não houver alterações de schema).
-  3. Executa `git push origin my-rustdesk-mesh-integration`.
-  4. SSH para o droplet: `git fetch --prune`, `git reset --hard origin/my-rustdesk-mesh-integration`, `npm ci`, `npm run build`, `systemctl restart rustdesk-frontend.service`, `curl -I http://127.0.0.1:3000`.
-  5. Cria log remoto em `/root/install-debug-<timestamp>.log` e copia para `logs/deploy/`.
-- [ ] Log local do deploy: `logs/deploy/deploy-<timestamp>.log`.
-- [ ] Estado em 2025-12-05: tentativa de deploy abortada porque `SUPABASE_PROJECT_REF` não estava definido quando `update_to_droplet.sh` chamou `scripts/update_supabase.sh`. Actualização: o script agora carrega `.env.local` automaticamente **e** tenta derivar `SUPABASE_PROJECT_REF` de `SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_URL` antes de falhar.
+- [ ] Deploy canónico agora é **Step-* only** para evitar compilar no droplet:
+  1. `Step-1-download-from-main.sh` – branch local igual a `origin/main`.
+  2. `Step-2-build-local.sh` – build e `node_modules` gerados localmente.
+  3. `Step-3-test-local.sh` – lint + testes antes de qualquer envio.
+  4. `Step-4-collect-error-logs.sh` – empacota `logs/local/` se algo falhar.
+  5. `Step-5-deploy-tested-build.sh` – `rsync` do build já testado; **não** corre `npm run build` no droplet, apenas reinicia `rustdesk-frontend.service`.
+- [ ] `update_from_github.sh` mantém-se como fallback no droplet (com build remoto) mas não é o caminho principal.
+- [ ] Logs locais em `logs/local/`, logs de deploy em `logs/deploy/`.
+- [x] Ficheiros desactualizados removidos de `scripts/` para reduzir confusão (`run-deploy-and-collect.sh`).
 
 ### 3.4 Registo de logs
 
