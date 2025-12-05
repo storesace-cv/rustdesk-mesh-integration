@@ -24,6 +24,9 @@ rsync -avz --delete \
   --exclude "node_modules" \
   --exclude ".next" \
   ./ root@142.93.106.94:/opt/rustdesk-mesh-integration/
+```
+
+> ⚠️ Antes de correr, garante que `SUPABASE_PROJECT_REF` está definido no ambiente local (necessário pelo `scripts/update_supabase.sh` chamado pelo fluxo). Se apenas quiseres fazer deploy do código sem tocar no Supabase, usa `SKIP_SUPABASE=1 scripts/update_to_droplet.sh`.
 
 2. Actualizar código no droplet a partir do GitHub
 

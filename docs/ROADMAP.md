@@ -191,6 +191,7 @@ Tarefas:
   4. SSH para o droplet: `git fetch --prune`, `git reset --hard origin/my-rustdesk-mesh-integration`, `npm ci`, `npm run build`, `systemctl restart rustdesk-frontend.service`, `curl -I http://127.0.0.1:3000`.
   5. Cria log remoto em `/root/install-debug-<timestamp>.log` e copia para `logs/deploy/`.
 - [ ] Log local do deploy: `logs/deploy/deploy-<timestamp>.log`.
+- [ ] Estado em 2025-12-05: tentativa de deploy abortada porque `SUPABASE_PROJECT_REF` não estava definido quando `update_to_droplet.sh` chamou `scripts/update_supabase.sh`. Próximo passo: exportar a variável ou usar `SKIP_SUPABASE=1` se for adequado ao contexto.
 
 ### 3.4 Registo de logs
 
