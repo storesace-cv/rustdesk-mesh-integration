@@ -5,6 +5,13 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
+function jsonResponse(body: Record<string, unknown>, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event.request));
 });
@@ -12,30 +19,21 @@ addEventListener("fetch", (event) => {
 async function handleRequest(req: Request) {
   try {
     if (req.method !== "POST") {
-      return new Response(JSON.stringify({ error: "method_not_allowed" }), {
-        status: 405,
-        headers: { "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "method_not_allowed" }, 405);
     }
 
-    let payload;
+    let payload: any;
     try {
       payload = await req.json();
     } catch (e) {
       console.error("[login] invalid json body:", String(e));
-      return new Response(JSON.stringify({ error: "invalid_json", message: String(e) }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "invalid_json", message: String(e) }, 400);
     }
 
     const email = payload?.email;
     const password = payload?.password;
     if (!email || !password) {
-      return new Response(JSON.stringify({ error: "missing_fields" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "missing_fields", message: "Email and password required" }, 400);
     }
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -43,15 +41,12 @@ async function handleRequest(req: Request) {
       if (!SUPABASE_URL) missing.push("SUPABASE_URL");
       if (!SUPABASE_SERVICE_ROLE_KEY) missing.push("SUPABASE_SERVICE_ROLE_KEY");
 
-      return new Response(
-        JSON.stringify({
+      return jsonResponse(
+        {
           error: "config_error",
           message: `Missing env: ${missing.join(", ")}`,
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
         },
+        500,
       );
     }
 
@@ -84,38 +79,29 @@ async function handleRequest(req: Request) {
 
     if (!tokenResp.ok) {
       const errorMessage = json?.error_description || json?.msg || text;
-      return new Response(
-        JSON.stringify({
+      return jsonResponse(
+        {
           error: json?.error || "invalid_login",
           message: errorMessage || "Invalid login credentials",
-        }),
-        {
-          status: tokenResp.status,
-          headers: { "Content-Type": "application/json" },
         },
+        tokenResp.status,
       );
     }
 
     const accessToken = json?.access_token;
     if (!accessToken) {
-      return new Response(
-        JSON.stringify({
+      return jsonResponse(
+        {
           error: "login_failed",
           message: "Token endpoint did not return access_token",
-        }),
-        { status: 502, headers: { "Content-Type": "application/json" } },
+        },
+        502,
       );
     }
 
-    return new Response(JSON.stringify({ token: accessToken }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse({ token: accessToken }, 200);
   } catch (err) {
     console.error("[login] handler error:", err);
-    return new Response(JSON.stringify({ error: "internal_error", message: String(err) }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "internal_error", message: String(err) }, 500);
   }
 }
