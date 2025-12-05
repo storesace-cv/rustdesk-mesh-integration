@@ -70,7 +70,7 @@ async function fetchMeshUser(userId: string) {
 }
 
 async function fetchDevices(ownerId: string) {
-  const url = `${SUPABASE_URL}/rest/v1/android_devices?owner=eq.${encodeURIComponent(ownerId)}&deleted_at=is.null`;
+  const url = `${SUPABASE_URL}/rest/v1/android_devices_grouping?owner=eq.${encodeURIComponent(ownerId)}&deleted_at=is.null`;
   const resp = await fetch(url, {
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,

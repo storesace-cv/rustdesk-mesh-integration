@@ -23,6 +23,14 @@ para que o Codex / Softgen consiga continuar o desenvolvimento.
   - `update_to_droplet.sh` – para correr no Mac.
 - `docs/ROADMAP.md` – Tarefas para o Codex.
 
+### Frontend: convenção do campo `notes`
+
+- **Grupo único:** `notes = "Grupo | Comentário"` → agrupa pelo `Grupo`.
+- **Grupo + SubGrupo:** `notes = "Grupo | SubGrupo | Comentário"` → agrupa por
+  `Grupo` e depois por `SubGrupo`.
+- **Por adotar:** `notes = ""` ou `notes = NULL` → o device é mostrado em
+  **"Dispositivos por Adotar"**.
+
 Ver `docs/ROADMAP.md` para detalhes e tarefas abertas.
 
 # rustdesk-mesh-integration
