@@ -70,29 +70,29 @@ O comportamento actual (observado pelos logs):
 
 Objectivo: tornar o script 100% funcional e idempotente.
 
-1. Abrir `scripts/sync-devices.sh`:
-   - Ler `android-users.json` a partir de `/opt/meshcentral/meshcentral-data`.
-   - Para cada utilizador:
-     - Ler `devices.json` em `/opt/meshcentral/meshcentral-files/ANDROID/<folderName>/devices.json`.
-     - Cada `device` deve ter pelo menos:
-       - `device_id`
-       - (idealmente) campos adicionais que o RustDesk fornece.
-   - Para cada device com `device_id`:
-     - chamar `register-device` (Edge Function) ou fazer `INSERT ... ON CONFLICT ...` directo na tabela `android_devices`.
+- [ ] Abrir `scripts/sync-devices.sh` e implementar a leitura de ficheiros:
+  - Ler `android-users.json` a partir de `/opt/meshcentral/meshcentral-data`.
+  - Para cada utilizador:
+    - Ler `devices.json` em `/opt/meshcentral/meshcentral-files/ANDROID/<folderName>/devices.json`.
+    - Cada `device` deve ter pelo menos:
+      - `device_id`
+      - (idealmente) campos adicionais que o RustDesk fornece.
+  - Para cada device com `device_id`:
+    - chamar `register-device` (Edge Function) ou fazer `INSERT ... ON CONFLICT ...` directo na tabela `android_devices`.
 
-2. Resolver autenticação:
-   - Escolher uma destas opções:
-     - (A) Usar `service_role` nas chamadas internas (cuidado com segurança).
-     - (B) Criar um JWT específico para sync (`sync_devices_jwt`) com claims bem definidas.
-   - Guardar as credenciais em `/opt/meshcentral/meshcentral-data/sync-env.sh` (por exemplo) e fazer `source` no início do script.
+- [ ] Resolver autenticação para o script:
+  - Escolher uma destas opções:
+    - (A) Usar `service_role` nas chamadas internas (cuidado com segurança).
+    - (B) Criar um JWT específico para sync (`sync_devices_jwt`) com claims bem definidas.
+  - Guardar as credenciais em `/opt/meshcentral/meshcentral-data/sync-env.sh` (por exemplo) e fazer `source` no início do script.
 
-3. Garantir que:
-   - O script é idempotente (pode correr de X em X minutos).
-   - Faz `upsert` (não duplica dispositivos).
-   - Preenche pelo menos:
-     - `device_id`
-     - `owner` (ligado ao mesh_user correspondente)
-     - `notes` (pode vir vazio → “Dispositivo por Adotar”).
+- [ ] Garantir execução segura e idempotente:
+  - O script é idempotente (pode correr de X em X minutos).
+  - Faz `upsert` (não duplica dispositivos).
+  - Preenche pelo menos:
+    - `device_id`
+    - `owner` (ligado ao mesh_user correspondente)
+    - `notes` (pode vir vazio → “Dispositivo por Adotar”).
 
 ### 2.2 Edge Functions
 
@@ -105,49 +105,49 @@ Rever e finalizar as funções em:
 
 Checklist:
 
-1. **login**
-   - Deve funcionar com apenas:
-     - `Authorization: Bearer <anon key>`
-     - body: `{ "email": "...", "password": "..." }`
-   - Usar `Deno.env.get("SUPABASE_URL")` e `Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")`.
-   - Estado actual: função ajustada para usar `SUPABASE_SERVICE_ROLE_KEY` e devolver `{ "token": "<access_token>" }` seguindo o SoT.
+- [ ] **login**
+  - Deve funcionar com apenas:
+    - `Authorization: Bearer <anon key>`
+    - body: `{ "email": "...", "password": "..." }`
+  - Usar `Deno.env.get("SUPABASE_URL")` e `Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")`.
+  - Estado actual: função ajustada para usar `SUPABASE_SERVICE_ROLE_KEY` e devolver `{ "token": "<access_token>" }` seguindo o SoT.
 
-2. **get-devices**
-   - Validar JWT (enviado pelo frontend como `Authorization: Bearer <session_jwt>`).
-   - Extrair `sub` (user id supabase) e mapear para `mesh_users`.
-   - Devolver lista de `android_devices` do owner.
+- [ ] **get-devices**
+  - Validar JWT (enviado pelo frontend como `Authorization: Bearer <session_jwt>`).
+  - Extrair `sub` (user id supabase) e mapear para `mesh_users`.
+  - Devolver lista de `android_devices` do owner.
 
-3. **register-device**
-   - Autenticação:
-     - ou via JWT (se for chamado pelo frontend),
-     - ou via `service_role` (se for chamado apenas por scripts internos).
-   - Actuar sobre a tabela `android_devices`:
-     - `INSERT ... ON CONFLICT (device_id, owner) DO UPDATE`
-     - Manter `notes` e timestamps.
+- [ ] **register-device**
+  - Autenticação:
+    - ou via JWT (se for chamado pelo frontend),
+    - ou via `service_role` (se for chamado apenas por scripts internos).
+  - Actuar sobre a tabela `android_devices`:
+    - `INSERT ... ON CONFLICT (device_id, owner) DO UPDATE`
+    - Manter `notes` e timestamps.
 
-4. **remove-device**
-   - Preferível soft-delete (ex: `deleted_at`).
-   - Filtrar por `owner` = utilizador autenticado.
+- [ ] **remove-device**
+  - Preferível soft-delete (ex: `deleted_at`).
+  - Filtrar por `owner` = utilizador autenticado.
 
 ### 2.3 Frontend
 
-1. Login:
-   - Confirmar se o fluxo actual é o desejado:
-     - Se já existir `rustdesk_jwt`, saltar login.
-     - Caso o token expire, forçar novo login.
-   - Melhorar mensagens de erro com base no `error.message` vindo da função `login`.
+- [ ] Login:
+  - Confirmar se o fluxo actual é o desejado:
+    - Se já existir `rustdesk_jwt`, saltar login.
+    - Caso o token expire, forçar novo login.
+  - Melhorar mensagens de erro com base no `error.message` vindo da função `login`.
 
-2. Dashboard:
-   - Garante que:
-     - Em ambiente de erro (Edge Function down, etc.), o dashboard continua a abrir.
-     - Se `devices` vier `[]`, mostrar:
-       - “Sem dispositivos adoptados (ainda)” em vez de stack trace.
+- [ ] Dashboard:
+  - Garante que:
+    - Em ambiente de erro (Edge Function down, etc.), o dashboard continua a abrir.
+    - Se `devices` vier `[]`, mostrar:
+      - “Sem dispositivos adoptados (ainda)” em vez de stack trace.
 
-3. Adopção / edição de `notes` (TODO):
-   - Adicionar:
-     - Botão “Editar” em cada card.
-     - Modal simples para alterar o campo `notes`.
-   - Enviar os dados para `register-device` de forma a actualizar o registo.
+- [ ] Adopção / edição de `notes` (TODO):
+  - Adicionar:
+    - Botão “Editar” em cada card.
+    - Modal simples para alterar o campo `notes`.
+  - Enviar os dados para `register-device` de forma a actualizar o registo.
 
 ### 2.4 Organização de grupos e subgrupos
 
@@ -159,7 +159,7 @@ A regra acordada:
 
 Tarefas:
 
-- Garantir que esta regra é:
+- [ ] Garantir que esta regra é:
   - Documentada no README principal (frontend).
   - Validada no backend (por exemplo, separar em colunas calculadas em `android_devices_expanded`).
 
@@ -169,33 +169,33 @@ Tarefas:
 
 ### 3.1 update_from_github.sh (local / droplet)
 
-- Objectivo: tornar `my-rustdesk-mesh-integration` uma cópia exacta de `origin/main`.
-- Comportamento: `git fetch --prune`, checkout/criação do branch, `git reset --hard origin/main` seguido de `git clean -fd`.
-- Salvaguardas: falha se existirem alterações não commitadas (usar `ALLOW_DIRTY_RESET=1` para forçar).
-- Uso: corre na raiz do repositório; não faz push.
+- [ ] Objectivo: tornar `my-rustdesk-mesh-integration` uma cópia exacta de `origin/main`.
+- [ ] Comportamento: `git fetch --prune`, checkout/criação do branch, `git reset --hard origin/main` seguido de `git clean -fd`.
+- [ ] Salvaguardas: falha se existirem alterações não commitadas (usar `ALLOW_DIRTY_RESET=1` para forçar).
+- [ ] Uso: corre na raiz do repositório; não faz push.
 
 ### 3.2 update_supabase.sh (local)
 
-- Fonte única para operações Supabase (migrations, seeds, deploy de Edge Functions).
-- Requer: `SUPABASE_PROJECT_REF`, Supabase CLI autenticado e `supabase/config.toml` ligado ao projecto.
-- Gera logs em `logs/supabase/supabase-update-<timestamp>.log`.
-- Falha se a CLI não estiver instalada ou se o projecto não estiver linkado.
+- [ ] Fonte única para operações Supabase (migrations, seeds, deploy de Edge Functions).
+- [ ] Requer: `SUPABASE_PROJECT_REF`, Supabase CLI autenticado e `supabase/config.toml` ligado ao projecto.
+- [ ] Gera logs em `logs/supabase/supabase-update-<timestamp>.log`.
+- [ ] Falha se a CLI não estiver instalada ou se o projecto não estiver linkado.
 
 ### 3.3 update_to_droplet.sh (local)
 
-- Fluxo completo de deploy para `root@142.93.106.94:/opt/rustdesk-frontend`.
-- Passos principais:
+- [ ] Fluxo completo de deploy para `root@142.93.106.94:/opt/rustdesk-frontend`.
+- [ ] Passos principais:
   1. Verifica se o branch activo é `my-rustdesk-mesh-integration` e se o working tree está limpo (`SKIP_DIRTY_CHECK=1` para ignorar).
   2. Chama `scripts/update_supabase.sh` antes de qualquer deploy (`SKIP_SUPABASE=1` para ignorar se não houver alterações de schema).
   3. Executa `git push origin my-rustdesk-mesh-integration`.
   4. SSH para o droplet: `git fetch --prune`, `git reset --hard origin/my-rustdesk-mesh-integration`, `npm ci`, `npm run build`, `systemctl restart rustdesk-frontend.service`, `curl -I http://127.0.0.1:3000`.
   5. Cria log remoto em `/root/install-debug-<timestamp>.log` e copia para `logs/deploy/`.
-- Log local do deploy: `logs/deploy/deploy-<timestamp>.log`.
+- [ ] Log local do deploy: `logs/deploy/deploy-<timestamp>.log`.
 
 ### 3.4 Registo de logs
 
-- `logs/supabase/`: actualizações de Supabase.
-- `logs/deploy/`: logs locais do deploy e cópias dos logs remotos do droplet.
+- [ ] `logs/supabase/`: actualizações de Supabase.
+- [ ] `logs/deploy/`: logs locais do deploy e cópias dos logs remotos do droplet.
 
 ---
 
