@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
 # Synchronize the local working branch with origin/main.
-# The goal is to make "my-rustdesk-mesh-integration" an exact copy of main,
-# without pushing any changes. Safe defaults protect uncommitted work unless
-# explicitly overridden.
+# The goal is to make the local branch an exact copy of origin/main without
+# pushing any changes. Safe defaults protect uncommitted work unless
+# explicitly overridden via ALLOW_DIRTY_RESET=1.
 
 set -euo pipefail
 
@@ -19,7 +19,7 @@ log() {
 
 cd "$REPO_DIR"
 log "Repositório: $REPO_DIR"
-log "Sincronizar $BRANCH_LOCAL a partir de origin/$BRANCH_REMOTE"
+log "Sincronizar '$BRANCH_LOCAL' a partir de 'origin/$BRANCH_REMOTE'"
 
 if [[ "$ALLOW_DIRTY_RESET" != "1" && -n "$(git status --porcelain)" ]]; then
   log "ERRO: existem alterações não commitadas. Exporta ALLOW_DIRTY_RESET=1 para forçar reset hard."
