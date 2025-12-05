@@ -36,6 +36,18 @@ fail() {
 
 log "Raiz do repositório: $ROOT_DIR"
 log "Log local: $LOCAL_LOG"
+
+ENV_FILE="${ENV_FILE:-"$ROOT_DIR/.env.local"}"
+if [[ -f "$ENV_FILE" ]]; then
+  log "A carregar variáveis de ambiente de $ENV_FILE"
+  # shellcheck disable=SC1090
+  set -a
+  source "$ENV_FILE"
+  set +a
+else
+  log "Nenhum ficheiro de ambiente encontrado em $ENV_FILE (a continuar sem carregar .env.local)"
+fi
+
 cd "$ROOT_DIR"
 
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
