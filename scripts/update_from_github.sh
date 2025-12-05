@@ -1,34 +1,49 @@
 #!/usr/bin/env bash
 #
-# Actualiza o branch local "my-rustdesk-mesh-integration"
-# a partir do branch remoto "origin/main", SEM NUNCA fazer push.
-# Apenas prepara o teu branch local para depois ser enviado para o droplet.
+# Synchronize the local working branch with origin/main.
+# The goal is to make "my-rustdesk-mesh-integration" an exact copy of main,
+# without pushing any changes. Safe defaults protect uncommitted work unless
+# explicitly overridden.
 
 set -euo pipefail
 
-BRANCH_LOCAL="my-rustdesk-mesh-integration"
-BRANCH_REMOTE="main"
-REPO_DIR="$(pwd)"
+BRANCH_LOCAL=${BRANCH_LOCAL:-"my-rustdesk-mesh-integration"}
+BRANCH_REMOTE=${BRANCH_REMOTE:-"main"}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ALLOW_DIRTY_RESET=${ALLOW_DIRTY_RESET:-0}
 
-echo "[update_local_branch] Repositório: $REPO_DIR"
-echo "[update_local_branch] A atualizar $BRANCH_LOCAL a partir de origin/$BRANCH_REMOTE"
+log() {
+  printf '[update_from_github][%s] %s\n' "$(date +"%Y-%m-%dT%H:%M:%S%z")" "$*"
+}
 
-# Garantir que estamos no repositório
 cd "$REPO_DIR"
+log "Repositório: $REPO_DIR"
+log "Sincronizar $BRANCH_LOCAL a partir de origin/$BRANCH_REMOTE"
 
-# Buscar atualizações do GitHub
-echo "[update_local_branch] git fetch origin"
-git fetch origin
-
-# Garantir que o branch local existe
-if ! git show-ref --verify --quiet "refs/heads/$BRANCH_LOCAL"; then
-  echo "[update_local_branch] Branch local não existe. Criar a partir de origin/$BRANCH_REMOTE"
-  git checkout -b "$BRANCH_LOCAL" "origin/$BRANCH_REMOTE"
-else
-  echo "[update_local_branch] Checkout para $BRANCH_LOCAL"
-  git checkout "$BRANCH_LOCAL"
-  echo "[update_local_branch] Merge de origin/$BRANCH_REMOTE → $BRANCH_LOCAL"
-  git merge --ff-only "origin/$BRANCH_REMOTE"
+if [[ "$ALLOW_DIRTY_RESET" != "1" && -n "$(git status --porcelain)" ]]; then
+  log "ERRO: existem alterações não commitadas. Exporta ALLOW_DIRTY_RESET=1 para forçar reset hard."
+  exit 1
 fi
 
-echo "[update_local_branch] DONE. Branch '$BRANCH_LOCAL' agora está sincronizado com 'origin/$BRANCH_REMOTE'."
+if ! git show-ref --verify --quiet "refs/remotes/origin/$BRANCH_REMOTE"; then
+  log "ERRO: origin/$BRANCH_REMOTE não existe. Verifica o remoto antes de continuar."
+  exit 1
+fi
+
+log "git fetch --prune origin"
+git fetch --prune origin
+
+if git show-ref --verify --quiet "refs/heads/$BRANCH_LOCAL"; then
+  log "Checkout para $BRANCH_LOCAL"
+  git checkout "$BRANCH_LOCAL"
+else
+  log "Criar branch $BRANCH_LOCAL a partir de origin/$BRANCH_REMOTE"
+  git checkout -b "$BRANCH_LOCAL" "origin/$BRANCH_REMOTE"
+fi
+
+log "Reset hard para origin/$BRANCH_REMOTE"
+git reset --hard "origin/$BRANCH_REMOTE"
+log "Limpar ficheiros não rastreados (git clean -fd)"
+git clean -fd
+log "Branch '$BRANCH_LOCAL' agora espelha origin/$BRANCH_REMOTE."

@@ -164,28 +164,37 @@ Tarefas:
 
 ---
 
-## 3. Scripts de deployment
+## 3. Automação de deploy e Supabase
 
-### 3.1 update_from_github.sh (droplet)
+### 3.1 update_from_github.sh (local / droplet)
 
-- Localização sugerida no droplet:
-  - `/opt/rustdesk-frontend/scripts/update_from_github.sh`
-- Responsabilidades:
-  - `cd /opt/rustdesk-frontend`
-  - `git fetch && git pull origin my-rustdesk-mesh-integration`
-  - `npm install`
-  - `npm run build`
-  - `systemctl restart rustdesk-frontend.service`
+- Objectivo: tornar `my-rustdesk-mesh-integration` uma cópia exacta de `origin/main`.
+- Comportamento: `git fetch --prune`, checkout/criação do branch, `git reset --hard origin/main` seguido de `git clean -fd`.
+- Salvaguardas: falha se existirem alterações não commitadas (usar `ALLOW_DIRTY_RESET=1` para forçar).
+- Uso: corre na raiz do repositório; não faz push.
 
-### 3.2 update_to_droplet.sh (Mac)
+### 3.2 update_supabase.sh (local)
 
-- Localização:
-  - raiz do repositório local.
-- Responsabilidades:
-  - `git add .`
-  - `git commit -m "..."` (mensagem default se não for fornecida).
-  - `git push origin my-rustdesk-mesh-integration`
-  - `ssh root@142.93.106.94 "bash /opt/rustdesk-frontend/scripts/update_from_github.sh"`
+- Fonte única para operações Supabase (migrations, seeds, deploy de Edge Functions).
+- Requer: `SUPABASE_PROJECT_REF`, Supabase CLI autenticado e `supabase/config.toml` ligado ao projecto.
+- Gera logs em `logs/supabase/supabase-update-<timestamp>.log`.
+- Falha se a CLI não estiver instalada ou se o projecto não estiver linkado.
+
+### 3.3 update_to_droplet.sh (local)
+
+- Fluxo completo de deploy para `root@142.93.106.94:/opt/rustdesk-frontend`.
+- Passos principais:
+  1. Verifica se o branch activo é `my-rustdesk-mesh-integration` e se o working tree está limpo (`SKIP_DIRTY_CHECK=1` para ignorar).
+  2. Chama `scripts/update_supabase.sh` antes de qualquer deploy (`SKIP_SUPABASE=1` para ignorar se não houver alterações de schema).
+  3. Executa `git push origin my-rustdesk-mesh-integration`.
+  4. SSH para o droplet: `git fetch --prune`, `git reset --hard origin/my-rustdesk-mesh-integration`, `npm ci`, `npm run build`, `systemctl restart rustdesk-frontend.service`, `curl -I http://127.0.0.1:3000`.
+  5. Cria log remoto em `/root/install-debug-<timestamp>.log` e copia para `logs/deploy/`.
+- Log local do deploy: `logs/deploy/deploy-<timestamp>.log`.
+
+### 3.4 Registo de logs
+
+- `logs/supabase/`: actualizações de Supabase.
+- `logs/deploy/`: logs locais do deploy e cópias dos logs remotos do droplet.
 
 ---
 
