@@ -52,6 +52,7 @@ Este é o percurso canónico sempre que há alterações novas no GitHub e é ne
 4. **(Alternativa) Actualizar directamente no droplet a partir do GitHub**
    - Se já estás dentro do droplet e só queres trazer o código publicado, usar `/opt/rustdesk-mesh-integration/scripts/update_from_github.sh`.
    - Ele faz `git fetch --prune`, `git reset --hard origin/my-rustdesk-mesh-integration`, `npm install`, `npm run build` e reinicia o serviço.
+   - ⚙️ Não é necessário compilar manualmente no portátil: tanto `update_to_droplet.sh` (fluxo local→droplet) como `update_from_github.sh` (no próprio droplet) executam `npm run build` dentro do droplet antes de reiniciar o serviço. Só precisas de correr `npm run build` localmente se quiseres validar o build antes de publicar.
 5. **Verificar serviço**
    - Após o deploy (via script local ou via update_from_github no droplet):
      - `systemctl status rustdesk-frontend.service`
