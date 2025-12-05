@@ -31,26 +31,22 @@ Este repositório utiliza um **Source of Truth (SoT)** centralizado para garanti
 
 ## 📘 Source of Truth (SoT)
 
-O SoT encontra-se em `docs/softgen/`:
+O SoT encontra-se em `docs/sot/` (ver `docs/sot/README.md` para o índice completo). Estes
+ficheiros definem a arquitectura, contratos, integrações com o MeshCentral/Supabase e o
+playbook operacional. Todos os módulos, scripts e prompts devem seguir rigorosamente estes
+documentos.
 
-- `docs/softgen/00-master-mode.md`
-- `docs/softgen/ota.md`
-- `docs/softgen/HTNG.md`
-- `docs/softgen/pms-01-core-entities.md`
-- `docs/softgen/pms-02-reservations.md`
-- `docs/softgen/pms-03-rates-night-audit.md`
-- `docs/softgen/pms-04-accounts-billing.md`
-- `docs/softgen/pms-05-pos-logs-validator.md`
-- `docs/softgen/pms-06-fiscal-doc-rules.md`
+## 🧾 Notas de versão
 
-Todos os módulos, scripts e prompts devem seguir rigorosamente estes documentos.
+- Última release documentada: `v0.1.0` — ver `.github/release-notes/v0.1.0.md`.
+- Estado da branch principal e alinhamento de SoT: ver `docs/MAIN_BRANCH_STATUS.md`.
 
 ## 🚀 Fluxo de Trabalho
 
-1. Actualizar ou validar os ficheiros SoT em `docs/softgen/`.
+1. Actualizar ou validar os ficheiros SoT em `docs/sot/`.
 2. Confirmar que qualquer alteração no código está alinhada com o SoT.
 3. Realizar commits para a branch `main`.
-4. Softgen.ai deve ser instruído com prompts que carregam estes ficheiros em ordem.
+4. Softgen.ai deve ser instruído com prompts que carregam os ficheiros SoT conforme listado em `docs/sot/README.md`.
 
 ## 📤 Envio para GitHub
 
@@ -58,24 +54,4 @@ Todos os módulos, scripts e prompts devem seguir rigorosamente estes documentos
 git add .
 git commit -m "Atualização README e alinhamento com SoT"
 git push origin main
-```
-
-## 🧠 Prompt para o Codex (Softgen.ai)
-
-```
-Before acting on the request below, please load and process ALL the following SoT files
-in the exact order listed:
-
-1. docs/softgen/00-master-mode.md
-2. docs/softgen/ota.md
-3. docs/softgen/HTNG.md
-4. docs/softgen/pms-01-core-entities.md
-5. docs/softgen/pms-02-reservations.md
-6. docs/softgen/pms-03-rates-night-audit.md
-7. docs/softgen/pms-04-accounts-billing.md
-8. docs/softgen/pms-05-pos-logs-validator.md
-9. docs/softgen/pms-06-fiscal-doc-rules.md
-
-After fully loading and internalizing ALL these files in the specified order,
-proceed with the requested task.
 ```
