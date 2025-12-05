@@ -28,6 +28,7 @@ Este ficheiro serve de guia para o Codex / Softgen.ai continuar o trabalho.
     - UI:
       - Grupos e subgrupos colapsáveis.
       - Cards por dispositivo com `device_id`, `owner` e `notes`.
+  - O `tsconfig.json` exclui `supabase/functions` para evitar que o type-check do Next.js interprete código Deno das Edge Functions e falhe a build.
 
 ### 1.2 Supabase (estrutura esperada)
 
