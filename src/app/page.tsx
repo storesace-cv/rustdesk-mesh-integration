@@ -28,6 +28,12 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      if (!email || !password) {
+        setError("Email e password são obrigatórios.");
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch(`${supabaseUrl}/functions/v1/login`, {
         method: "POST",
         headers: {
@@ -40,7 +46,12 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "Falha no login");
+        setError(
+          data.message ||
+            (res.status === 401
+              ? "Credenciais inválidas ou utilizador não existe."
+              : "Falha no login"),
+        );
         setLoading(false);
         return;
       }
@@ -57,7 +68,9 @@ export default function LoginPage() {
 
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Erro inesperado.");
+      setError(
+        err?.message || "Não foi possível comunicar com o servidor. Tenta novamente.",
+      );
     } finally {
       setLoading(false);
     }
