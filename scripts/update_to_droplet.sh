@@ -15,6 +15,7 @@ BRANCH="my-rustdesk-mesh-integration"
 REMOTE_USER=${REMOTE_USER:-"root"}
 REMOTE_HOST=${REMOTE_HOST:-"142.93.106.94"}
 REMOTE_DIR=${REMOTE_DIR:-"/opt/rustdesk-frontend"}
+REMOTE_REPO_URL=${REMOTE_REPO_URL:-"$(git -C "$ROOT_DIR" config --get remote.origin.url || true)"}
 SKIP_SUPABASE=${SKIP_SUPABASE:-0}
 SKIP_DIRTY_CHECK=${SKIP_DIRTY_CHECK:-0}
 TIMESTAMP="$(date +"%Y%m%d-%H%M%S")"
@@ -38,6 +39,8 @@ fail() {
 
 log "Raiz do repositório: $ROOT_DIR"
 log "Log local: $LOCAL_LOG"
+
+[[ -n "$REMOTE_REPO_URL" ]] || fail "Não foi possível determinar REMOTE_REPO_URL (git remote origin). Define REMOTE_REPO_URL explicitamente."
 
 ENV_FILE="${ENV_FILE:-"$ROOT_DIR/.env.local"}"
 if [[ -f "$ENV_FILE" ]]; then
@@ -71,16 +74,19 @@ git push origin "$BRANCH"
 
 log "Iniciar deploy remoto para $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR"
 set +e
-ssh "$REMOTE_USER@$REMOTE_HOST" "TIMESTAMP='$TIMESTAMP' BRANCH='$BRANCH' REMOTE_DIR='$REMOTE_DIR' bash -s" <<'EOF'
+ssh "$REMOTE_USER@$REMOTE_HOST" "TIMESTAMP='$TIMESTAMP' BRANCH='$BRANCH' REMOTE_DIR='$REMOTE_DIR' REMOTE_REPO_URL='$REMOTE_REPO_URL' bash -s" <<'EOF'
 set -euo pipefail
-: "${TIMESTAMP:?}" "${BRANCH:?}" "${REMOTE_DIR:?}"
+: "${TIMESTAMP:?}" "${BRANCH:?}" "${REMOTE_DIR:?}" "${REMOTE_REPO_URL:?}"
 LOG_FILE="/root/install-debug-${TIMESTAMP}.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "[remote] Deploy iniciado. Log: $LOG_FILE"
 if [[ ! -d "$REMOTE_DIR/.git" ]]; then
-  echo "[remote][ERRO] Repositório Git não encontrado em $REMOTE_DIR"
-  exit 1
+  echo "[remote] Repositório Git não encontrado em $REMOTE_DIR — preparar clone"
+  mkdir -p "$(dirname "$REMOTE_DIR")"
+  rm -rf "$REMOTE_DIR"
+  echo "[remote] git clone $REMOTE_REPO_URL $REMOTE_DIR"
+  git clone "$REMOTE_REPO_URL" "$REMOTE_DIR"
 fi
 
 cd "$REMOTE_DIR"
