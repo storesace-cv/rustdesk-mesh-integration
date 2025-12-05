@@ -110,6 +110,7 @@ Checklist:
      - `Authorization: Bearer <anon key>`
      - body: `{ "email": "...", "password": "..." }`
    - Usar `Deno.env.get("SUPABASE_URL")` e `Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")`.
+   - Estado actual: função ajustada para usar `SUPABASE_SERVICE_ROLE_KEY` e devolver `{ "token": "<access_token>" }` seguindo o SoT.
 
 2. **get-devices**
    - Validar JWT (enviado pelo frontend como `Authorization: Bearer <session_jwt>`).
