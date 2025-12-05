@@ -1,0 +1,6 @@
+[update_supabase][2025-12-05T17:24:30+0000] Raiz do repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
+[update_supabase][2025-12-05T17:24:30+0000] Log: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/supabase/supabase-update-20251205-172430.log
+[update_supabase][2025-12-05T17:24:30+0000] A carregar variáveis de ambiente de /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/.env.local
+[update_supabase][2025-12-05T17:24:31+0000] Versão Supabase CLI: 2.65.5
+[update_supabase][2025-12-05T17:24:31+0000] SUPABASE_PROJECT_REF não definido; derivado de URL Supabase: kqwaibgvmzcqeoctukoy
+[update_supabase][2025-12-05T17:24:31+0000] ERRO: supabase/config.toml não encontrado. Corre 'supabase init' e 'supabase link --project-ref kqwaibgvmzcqeoctukoy'.
