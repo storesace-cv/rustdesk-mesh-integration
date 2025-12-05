@@ -7,6 +7,7 @@ cat << 'EOF' > docs/DEPLOY_DROPLET.md
 ## Estrutura no droplet
 
 - Código do frontend: `/opt/rustdesk-mesh-integration`
+- Entrypoint systemd: `/opt/rustdesk-frontend/start.sh` (carrega `.env.production`/`.env.local` se existirem e lança `next start`)
 - Serviço systemd: `rustdesk-frontend.service`
 - Next.js corre em: `http://142.93.106.94:3000` (por trás de DNS `rustdesk.bwb.pt`).
 
