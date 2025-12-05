@@ -21,7 +21,6 @@ cd "$REPO_DIR"
 log "Repositório: $REPO_DIR"
 log "Sincronizar '$BRANCH_LOCAL' a partir de 'origin/$BRANCH_REMOTE'"
 
-# Só consideramos ficheiros rastreados como "dirty". Untracked (logs, backups, etc.) são ignorados.
 if [[ "$ALLOW_DIRTY_RESET" != "1" ]]; then
   if ! git diff-index --quiet HEAD --; then
     log "ERRO: existem alterações não commitadas em ficheiros rastreados. Exporta ALLOW_DIRTY_RESET=1 para forçar reset hard."
