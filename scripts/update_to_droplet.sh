@@ -19,10 +19,12 @@ SKIP_SUPABASE=${SKIP_SUPABASE:-0}
 SKIP_DIRTY_CHECK=${SKIP_DIRTY_CHECK:-0}
 TIMESTAMP="$(date +"%Y%m%d-%H%M%S")"
 LOG_DIR="$ROOT_DIR/logs/deploy"
+DROPLET_LOG_DIR="$ROOT_DIR/logs/droplet"
 LOCAL_LOG="$LOG_DIR/deploy-$TIMESTAMP.log"
 REMOTE_LOG="/root/install-debug-$TIMESTAMP.log"
+DROPLET_LOG="$DROPLET_LOG_DIR/install-debug-$TIMESTAMP.log"
 
-mkdir -p "$LOG_DIR"
+mkdir -p "$LOG_DIR" "$DROPLET_LOG_DIR"
 exec > >(tee -a "$LOCAL_LOG") 2>&1
 
 log() {
@@ -119,7 +121,7 @@ else
 fi
 
 set +e
-scp "$REMOTE_USER@$REMOTE_HOST:$REMOTE_LOG" "$LOG_DIR/"
+scp "$REMOTE_USER@$REMOTE_HOST:$REMOTE_LOG" "$DROPLET_LOG"
 SCP_STATUS=$?
 set -e
 
@@ -132,7 +134,7 @@ if [[ $SSH_STATUS -ne 0 ]]; then
 fi
 
 if [[ $SCP_STATUS -eq 0 ]]; then
-  log "Log remoto copiado para $LOG_DIR"
+  log "Log remoto copiado para $DROPLET_LOG"
 fi
 
-log "Deploy concluído com sucesso. Log remoto: $REMOTE_LOG | Log local: $LOCAL_LOG"
+log "Deploy concluído com sucesso. Log remoto: $REMOTE_LOG (cópia local em $DROPLET_LOG) | Log local: $LOCAL_LOG"
