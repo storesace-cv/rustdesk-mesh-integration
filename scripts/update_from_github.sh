@@ -11,7 +11,7 @@ BRANCH_LOCAL=${BRANCH_LOCAL:-"my-rustdesk-mesh-integration"}
 BRANCH_REMOTE=${BRANCH_REMOTE:-"main"}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-ALLOW_DIRTY_RESET=${ALLOW_DIRTY_RESET:-0}
+ALLOW_DIRTY_RESET=${ALLOW_DIRTY_RESET:-1}
 
 log() {
   printf '[update_from_github][%s] %s\n' "$(date +"%Y-%m-%dT%H:%M:%S%z")" "$*"
