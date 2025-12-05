@@ -17,7 +17,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 LOG_DIR="$ROOT_DIR/logs/supabase"
 TIMESTAMP="$(date +"%Y%m%d-%H%M%S")"
 LOG_FILE="$LOG_DIR/supabase-update-$TIMESTAMP.log"
-SUPABASE_PROJECT_REF=${SUPABASE_PROJECT_REF:-""}
+ENV_FILE="${ENV_FILE:-"$ROOT_DIR/.env.local"}"
 
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_FILE") 2>&1
@@ -34,10 +34,39 @@ fail() {
 log "Raiz do repositório: $ROOT_DIR"
 log "Log: $LOG_FILE"
 
+if [[ -f "$ENV_FILE" ]]; then
+  log "A carregar variáveis de ambiente de $ENV_FILE"
+  # shellcheck disable=SC1090
+  set -a
+  source "$ENV_FILE"
+  set +a
+else
+  log "Nenhum ficheiro de ambiente encontrado em $ENV_FILE (a continuar sem carregar .env.local)"
+fi
+
 command -v supabase >/dev/null 2>&1 || fail "Supabase CLI não encontrado no PATH. Instala antes de continuar."
 log "Versão Supabase CLI: $(supabase --version)"
 
-[[ -n "$SUPABASE_PROJECT_REF" ]] || fail "Define SUPABASE_PROJECT_REF para identificar o projecto remoto."
+derive_project_ref() {
+  local url="$1"
+  if [[ -n "$url" && "$url" =~ https?://([^./]+)\.supabase\.co ]]; then
+    echo "${BASH_REMATCH[1]}"
+  fi
+}
+
+SUPABASE_PROJECT_REF=${SUPABASE_PROJECT_REF:-""}
+if [[ -z "$SUPABASE_PROJECT_REF" ]]; then
+  for candidate in "${SUPABASE_URL:-}" "${NEXT_PUBLIC_SUPABASE_URL:-}"; do
+    derived_ref="$(derive_project_ref "$candidate")"
+    if [[ -n "$derived_ref" ]]; then
+      SUPABASE_PROJECT_REF="$derived_ref"
+      log "SUPABASE_PROJECT_REF não definido; derivado de URL Supabase: $SUPABASE_PROJECT_REF"
+      break
+    fi
+  done
+fi
+
+[[ -n "$SUPABASE_PROJECT_REF" ]] || fail "Define SUPABASE_PROJECT_REF para identificar o projecto remoto (ou garante que SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL incluem o project-ref)."
 [[ -f "$ROOT_DIR/supabase/config.toml" ]] || fail "supabase/config.toml não encontrado. Corre 'supabase init' e 'supabase link --project-ref $SUPABASE_PROJECT_REF'."
 
 log "Garantir ligação ao projecto (supabase link)"

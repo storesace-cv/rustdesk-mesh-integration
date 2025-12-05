@@ -177,7 +177,7 @@ Tarefas:
 ### 3.2 update_supabase.sh (local)
 
 - [ ] Fonte única para operações Supabase (migrations, seeds, deploy de Edge Functions).
-- [ ] Requer: `SUPABASE_PROJECT_REF`, Supabase CLI autenticado e `supabase/config.toml` ligado ao projecto.
+- [ ] Requer: `SUPABASE_PROJECT_REF`, Supabase CLI autenticado e `supabase/config.toml` ligado ao projecto (pode inferir `SUPABASE_PROJECT_REF` a partir de `SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_URL` no `.env.local`).
 - [ ] Gera logs em `logs/supabase/supabase-update-<timestamp>.log`.
 - [ ] Falha se a CLI não estiver instalada ou se o projecto não estiver linkado.
 
@@ -191,7 +191,7 @@ Tarefas:
   4. SSH para o droplet: `git fetch --prune`, `git reset --hard origin/my-rustdesk-mesh-integration`, `npm ci`, `npm run build`, `systemctl restart rustdesk-frontend.service`, `curl -I http://127.0.0.1:3000`.
   5. Cria log remoto em `/root/install-debug-<timestamp>.log` e copia para `logs/deploy/`.
 - [ ] Log local do deploy: `logs/deploy/deploy-<timestamp>.log`.
-- [ ] Estado em 2025-12-05: tentativa de deploy abortada porque `SUPABASE_PROJECT_REF` não estava definido quando `update_to_droplet.sh` chamou `scripts/update_supabase.sh`. Próximo passo: exportar a variável ou usar `SKIP_SUPABASE=1` se for adequado ao contexto. O script agora lê automaticamente `.env.local` (ou `ENV_FILE`) para injectar `SUPABASE_ACCESS_TOKEN`/`NEXT_PUBLIC_SUPABASE_*` antes de correr.
+- [ ] Estado em 2025-12-05: tentativa de deploy abortada porque `SUPABASE_PROJECT_REF` não estava definido quando `update_to_droplet.sh` chamou `scripts/update_supabase.sh`. Actualização: o script agora carrega `.env.local` automaticamente **e** tenta derivar `SUPABASE_PROJECT_REF` de `SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_URL` antes de falhar.
 
 ### 3.4 Registo de logs
 
