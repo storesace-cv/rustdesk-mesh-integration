@@ -105,7 +105,10 @@ async function handleRequest(req: Request) {
       return jsonResponse({ error: "unauthorized", message: "Missing Bearer JWT" }, 401);
     }
 
-    const authUser = await fetchAuthUser(jwt);
+    const isServiceKey = jwt === SUPABASE_SERVICE_ROLE_KEY;
+    const authUser = isServiceKey
+      ? { id: null, isService: true }
+      : await fetchAuthUser(jwt);
 
     let payload: any;
     try {
