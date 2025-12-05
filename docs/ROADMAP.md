@@ -192,7 +192,7 @@ Estado em 2025-12-05: `start.sh` adicionado na raiz do repositório para servir 
 - [ ] Deploy canónico agora é **Step-* only** para evitar compilar no droplet:
   1. `Step-1-download-from-main.sh` – branch local igual a `origin/main`.
   2. `Step-2-build-local.sh` – build e `node_modules` gerados localmente.
-  3. `Step-3-test-local.sh` – lint + testes antes de qualquer envio (força `next lint --dir .` para evitar erros de caminho inexistente).
+  3. `Step-3-test-local.sh` – lint + testes antes de qualquer envio (força `next lint .` para evitar erros de caminho inexistente).
   4. `Step-4-collect-error-logs.sh` – empacota `logs/local/` se algo falhar.
   5. `Step-5-deploy-tested-build.sh` – `rsync` do build já testado; **não** corre `npm run build` no droplet, apenas reinicia `rustdesk-frontend.service`.
 - [ ] `update_from_github.sh` mantém-se como fallback no droplet (com build remoto) mas não é o caminho principal.
