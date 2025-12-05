@@ -183,6 +183,7 @@ Tarefas:
 
 Estado em 2025-12-05: `supabase/config.toml` passou a estar versionado com `project_id = kqwaibgvmzcqeoctukoy`; continua a ser obrigatório correr `supabase link --project-ref kqwaibgvmzcqeoctukoy` com credenciais válidas antes de `supabase db push`/`functions deploy`.
 Estado em 2025-12-06: `supabase/config.toml` foi limpo de chaves antigas (`realtime.port`, `storage.s3`, `kong`) para alinhar com o schema suportado pela CLI v2.65+ e permitir `supabase link` sem erros de parsing.
+Estado em 2025-12-07: `scripts/update_to_droplet.sh` passou a clonar o repositório remoto automaticamente quando `REMOTE_DIR` não contém `.git`, evitando falhas de deploy por falta do repo em `/opt/rustdesk-frontend`.
 
 ### 3.3 update_to_droplet.sh (local)
 
