@@ -31,6 +31,34 @@ rsync -avz --delete \
 
 > ℹ️ O script carrega automaticamente variáveis de ambiente de `.env.local` na raiz do repositório (ou de um ficheiro alternativo definido em `ENV_FILE`). Usa o ficheiro partilhado em `~/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/.env.local` para injectar `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_DB_URL` e `SUPABASE_ACCESS_TOKEN` antes de correr o deploy.
 
+## 1.1 Fluxo completo: do GitHub até ao droplet
+
+Este é o percurso canónico sempre que há alterações novas no GitHub e é necessário publicá‑las no droplet `142.93.106.94`:
+
+1. **Actualizar o repositório local com o GitHub**
+   - Estar na branch `my-rustdesk-mesh-integration`.
+   - `git fetch --prune` e `git pull --ff-only` (ou `git reset --hard origin/my-rustdesk-mesh-integration` se for apenas uma estação CI). O objectivo é que o working tree local seja uma cópia exacta do GitHub.
+2. **Preparar variáveis de ambiente**
+   - Carregar `.env.local` (ou o ficheiro apontado por `ENV_FILE`) contendo `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_DB_URL`, `SUPABASE_ACCESS_TOKEN` e idealmente `SUPABASE_PROJECT_REF`.
+   - Se quiseres **só** enviar código sem tocar no Supabase, define `SKIP_SUPABASE=1`.
+3. **Executar o deploy local → droplet**
+   - Na raiz do repositório local, correr `scripts/update_to_droplet.sh`.
+   - O script:
+     1. Verifica o estado limpo do git (a não ser que uses `SKIP_DIRTY_CHECK=1`).
+     2. Chama `scripts/update_supabase.sh` (a menos que uses `SKIP_SUPABASE=1`).
+     3. Faz `git push origin my-rustdesk-mesh-integration`.
+     4. Liga por SSH ao droplet, faz `git fetch --prune`, `git reset --hard origin/my-rustdesk-mesh-integration`, `npm ci`, `npm run build` e `systemctl restart rustdesk-frontend.service`.
+     5. Cria log remoto e copia‑o para `logs/deploy/`.
+4. **(Alternativa) Actualizar directamente no droplet a partir do GitHub**
+   - Se já estás dentro do droplet e só queres trazer o código publicado, usar `/opt/rustdesk-mesh-integration/scripts/update_from_github.sh`.
+   - Ele faz `git fetch --prune`, `git reset --hard origin/my-rustdesk-mesh-integration`, `npm install`, `npm run build` e reinicia o serviço.
+   - ⚙️ Não é necessário compilar manualmente no portátil: tanto `update_to_droplet.sh` (fluxo local→droplet) como `update_from_github.sh` (no próprio droplet) executam `npm run build` dentro do droplet antes de reiniciar o serviço. Só precisas de correr `npm run build` localmente se quiseres validar o build antes de publicar.
+5. **Verificar serviço**
+   - Após o deploy (via script local ou via update_from_github no droplet):
+     - `systemctl status rustdesk-frontend.service`
+     - `curl -I http://127.0.0.1:3000`
+   - Conferir se há erros nos logs copiados para `logs/deploy/`.
+
 2. Actualizar código no droplet a partir do GitHub
 
 No droplet:
