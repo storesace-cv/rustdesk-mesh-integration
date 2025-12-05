@@ -181,6 +181,8 @@ Tarefas:
 - [ ] Gera logs em `logs/supabase/supabase-update-<timestamp>.log`.
 - [ ] Falha se a CLI não estiver instalada ou se o projecto não estiver linkado.
 
+Estado em 2025-12-05: `supabase/config.toml` passou a estar versionado com `project_id = kqwaibgvmzcqeoctukoy`; continua a ser obrigatório correr `supabase link --project-ref kqwaibgvmzcqeoctukoy` com credenciais válidas antes de `supabase db push`/`functions deploy`.
+
 ### 3.3 update_to_droplet.sh (local)
 
 - [ ] Fluxo completo de deploy para `root@142.93.106.94:/opt/rustdesk-frontend`.
