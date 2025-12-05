@@ -1,54 +1,126 @@
 #!/usr/bin/env bash
 #
-# Envia o conteúdo do branch local "my-rustdesk-mesh-integration"
-# para o droplet, via rsync.
-# NÃO faz build, NÃO mexe em serviços no droplet.
-# O droplet só recebe os ficheiros; outro script lá tratará do resto.
+# Deploy do branch my-rustdesk-mesh-integration para o droplet.
+# - Gera log local em ./logs/deploy/
+# - Executa scripts/update_supabase.sh (pode ser ignorado com SKIP_SUPABASE=1)
+# - Faz push do branch para origin
+# - Actualiza código no droplet, faz build e reinicia o serviço
+# - Recolhe o log remoto (/root/install-debug-<timestamp>.log)
 
 set -euo pipefail
 
-# Caminho do repositório no teu Mac
-LOCAL_REPO_DIR="/Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration"
-LOCAL_BRANCH="my-rustdesk-mesh-integration"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+BRANCH="my-rustdesk-mesh-integration"
+REMOTE_USER=${REMOTE_USER:-"root"}
+REMOTE_HOST=${REMOTE_HOST:-"142.93.106.94"}
+REMOTE_DIR=${REMOTE_DIR:-"/opt/rustdesk-frontend"}
+SKIP_SUPABASE=${SKIP_SUPABASE:-0}
+SKIP_DIRTY_CHECK=${SKIP_DIRTY_CHECK:-0}
+TIMESTAMP="$(date +"%Y%m%d-%H%M%S")"
+LOG_DIR="$ROOT_DIR/logs/deploy"
+LOCAL_LOG="$LOG_DIR/deploy-$TIMESTAMP.log"
+REMOTE_LOG="/root/install-debug-$TIMESTAMP.log"
 
-# Destino no droplet
-REMOTE_USER="root"
-REMOTE_HOST="142.93.106.94"
-REMOTE_DIR="/opt/rustdesk-frontend"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$LOCAL_LOG") 2>&1
 
-echo "[push_to_droplet] Repositório local: $LOCAL_REPO_DIR"
-echo "[push_to_droplet] Branch local: $LOCAL_BRANCH"
-echo "[push_to_droplet] Destino remoto: $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR"
+log() {
+  printf '[update_to_droplet][%s] %s\n' "$(date +"%Y-%m-%dT%H:%M:%S%z")" "$*"
+}
 
-# Ir para o repositório local
-cd "$LOCAL_REPO_DIR"
+fail() {
+  log "ERRO: $*"
+  exit 1
+}
 
-# Garantir que estamos no branch certo
+log "Raiz do repositório: $ROOT_DIR"
+log "Log local: $LOCAL_LOG"
+cd "$ROOT_DIR"
+
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-if [[ "$CURRENT_BRANCH" != "$LOCAL_BRANCH" ]]; then
-  echo "[push_to_droplet] Checkout para branch $LOCAL_BRANCH (actual: $CURRENT_BRANCH)…"
-  git checkout "$LOCAL_BRANCH"
+[[ "$CURRENT_BRANCH" == "$BRANCH" ]] || fail "Branch actual é '$CURRENT_BRANCH'. Faz checkout para '$BRANCH' antes de deploy."
+
+if [[ "$SKIP_DIRTY_CHECK" != "1" && -n "$(git status --porcelain)" ]]; then
+  fail "Existem alterações não commitadas. Comita/descarta ou exporta SKIP_DIRTY_CHECK=1."
 fi
 
-# Verificar se há alterações não commitadas (para não mandar lixo sem quereres)
-if [[ "${SKIP_DIRTY_CHECK:-0}" != "1" ]]; then
-  if [[ -n "$(git status --porcelain)" ]]; then
-    echo "[push_to_droplet][ERRO] Existem alterações não commitadas neste branch."
-    echo "Commita/descarta antes de enviar, ou corre com SKIP_DIRTY_CHECK=1 para ignorar, por ex.:"
-    echo "  SKIP_DIRTY_CHECK=1 ./update_to_droplet.sh"
-    exit 1
-  fi
+if [[ "$SKIP_SUPABASE" != "1" ]]; then
+  log "Executar scripts/update_supabase.sh"
+  "$SCRIPT_DIR/update_supabase.sh"
+else
+  log "SKIP_SUPABASE=1 — a actualizar Supabase foi ignorado."
 fi
 
-echo "[push_to_droplet] Criar directório remoto se não existir…"
-ssh "$REMOTE_USER@$REMOTE_HOST" "mkdir -p '$REMOTE_DIR'"
+log "git push origin $BRANCH"
+git push origin "$BRANCH"
 
-echo "[push_to_droplet] Enviar ficheiros via rsync…"
-rsync -az --delete \
-  --exclude '.git' \
-  --exclude 'node_modules' \
-  --exclude '.next' \
-  --exclude 'dist' \
-  "$LOCAL_REPO_DIR"/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/"
+log "Iniciar deploy remoto para $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR"
+set +e
+ssh "$REMOTE_USER@$REMOTE_HOST" "TIMESTAMP='$TIMESTAMP' BRANCH='$BRANCH' REMOTE_DIR='$REMOTE_DIR' bash -s" <<'EOF'
+set -euo pipefail
+: "${TIMESTAMP:?}" "${BRANCH:?}" "${REMOTE_DIR:?}"
+LOG_FILE="/root/install-debug-${TIMESTAMP}.log"
+exec > >(tee -a "$LOG_FILE") 2>&1
 
-echo "[push_to_droplet] DONE. Código sincronizado com o droplet."
+echo "[remote] Deploy iniciado. Log: $LOG_FILE"
+if [[ ! -d "$REMOTE_DIR/.git" ]]; then
+  echo "[remote][ERRO] Repositório Git não encontrado em $REMOTE_DIR"
+  exit 1
+fi
+
+cd "$REMOTE_DIR"
+
+echo "[remote] git fetch --prune origin"
+git fetch --prune origin
+
+echo "[remote] git checkout $BRANCH"
+git checkout "$BRANCH"
+
+echo "[remote] git reset --hard origin/$BRANCH"
+git reset --hard "origin/$BRANCH"
+
+echo "[remote] npm ci --prefer-offline --no-audit --no-fund"
+npm ci --prefer-offline --no-audit --no-fund
+
+echo "[remote] npm run build"
+npm run build
+
+echo "[remote] systemctl restart rustdesk-frontend.service"
+systemctl restart rustdesk-frontend.service
+
+echo "[remote] systemctl status rustdesk-frontend.service --no-pager"
+systemctl status rustdesk-frontend.service --no-pager
+
+echo "[remote] curl -fsS -I http://127.0.0.1:3000"
+curl -fsS -I http://127.0.0.1:3000
+
+echo "[remote] Deploy concluído. Log em $LOG_FILE"
+EOF
+SSH_STATUS=$?
+set -e
+
+if [[ $SSH_STATUS -ne 0 ]]; then
+  log "Deploy remoto falhou (código $SSH_STATUS). A recolher log remoto se existir."
+else
+  log "Deploy remoto concluído."
+fi
+
+set +e
+scp "$REMOTE_USER@$REMOTE_HOST:$REMOTE_LOG" "$LOG_DIR/"
+SCP_STATUS=$?
+set -e
+
+if [[ $SCP_STATUS -ne 0 ]]; then
+  log "Não foi possível copiar o log remoto de $REMOTE_LOG (código $SCP_STATUS)."
+fi
+
+if [[ $SSH_STATUS -ne 0 ]]; then
+  fail "Deploy remoto falhou. Verifica $LOCAL_LOG e o log remoto em $REMOTE_LOG."
+fi
+
+if [[ $SCP_STATUS -eq 0 ]]; then
+  log "Log remoto copiado para $LOG_DIR"
+fi
+
+log "Deploy concluído com sucesso. Log remoto: $REMOTE_LOG | Log local: $LOCAL_LOG"
