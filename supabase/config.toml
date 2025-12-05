@@ -21,7 +21,6 @@ max_client_conn = 100
 
 [realtime]
 enabled = true
-port = 54340
 
 [studio]
 enabled = true
@@ -35,15 +34,3 @@ smtp_port = 1025
 [storage]
 enabled = true
 file_size_limit = "50MiB"
-
-[storage.s3]
-enabled = false
-endpoint = "http://localhost:9000"
-region = "us-east-1"
-bucket = "local"
-access_key_id = "supabase"
-secret_access_key = "supabase"
-
-[kong]
-port = 54325
-anonymous_reports = true
