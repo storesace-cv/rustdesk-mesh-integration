@@ -31,7 +31,7 @@ fi
 LOCAL_DIR="local-logs/droplet"
 LOCAL_FILE="${LOCAL_DIR}/app-debug.log"
 REMOTE="${DROPLET_SSH_USER}@${DROPLET_SSH_HOST}:${DROPLET_DEBUG_LOG_PATH}"
-STEP4_PATTERN="logs/local/Step-4-collect-error-logs-*.log"
+STEP4_PATTERN="logs/local-logs-*.tar.gz"
 STEP4_TARGET=""
 
 mkdir -p "$LOCAL_DIR"
@@ -50,17 +50,18 @@ shopt -u nullglob
 
 if (( ${#step4_candidates[@]} > 0 )); then
   step4_latest=$(ls -t "${step4_candidates[@]}" | head -n 1)
-  STEP4_TARGET="${LOCAL_DIR}/step-4-latest.log"
+  step4_basename="$(basename "$step4_latest")"
+  STEP4_TARGET="${LOCAL_DIR}/${step4_basename}"
   cp "$step4_latest" "$STEP4_TARGET"
-  echo "[get-error-log] Found Step-4 log: ${step4_latest}. Copied to ${STEP4_TARGET}."
+  echo "[get-error-log] Found Step-4 archive: ${step4_latest}. Copied to ${STEP4_TARGET}."
 else
-  echo "[get-error-log] Warning: No Step-4 log found. Skipping."
+  echo "[get-error-log] Warning: No Step-4 archive found. Skipping."
 fi
 
-git add "$LOCAL_FILE"
+git add -f "$LOCAL_FILE"
 if [[ -n "$STEP4_TARGET" ]]; then
-  git add "$STEP4_TARGET"
-  echo "[get-error-log] Adding Step-4 log to commit."
+  git add -f "$STEP4_TARGET"
+  echo "[get-error-log] Adding Step-4 archive to commit."
 fi
 
 if git diff --cached --quiet; then
