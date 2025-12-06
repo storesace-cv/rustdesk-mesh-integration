@@ -3,9 +3,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("suporte@bwb.pt");
@@ -34,16 +31,15 @@ export default function LoginPage() {
         return;
       }
 
-      const res = await fetch(`${supabaseUrl}/functions/v1/login`, {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${anonKey}`,
         },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         setError(

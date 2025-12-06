@@ -70,6 +70,12 @@ O comportamento actual (observado pelos logs):
     para evitar falsos negativos quando o Next.js demora a levantar.
   - Heredoc remoto está agora protegido contra expansão local (`<<'EOF'`), evitando erros `unbound variable` quando o script corre com
     `set -u`.
+- Sistema de debug centralizado:
+  - Variáveis `APP_DEBUG_ENABLED` e `APP_DEBUG_LOG_PATH` controlam um ficheiro único (`/var/log/rustdesk-mesh/app-debug.log` por
+    defeito, com fallback para `logs/app-debug.log`).
+  - O ficheiro é truncado a cada arranque (via `instrumentation.ts`) e regista arranque + fluxo de login quando `APP_DEBUG_ENABLED=true`.
+  - Rota `/api/login` passa a mediar o login para logar cada passo (sem expor passwords/tokens).
+  - `scripts/get-error-log.sh` copia o ficheiro remoto para `local-logs/droplet/app-debug.log` usando `scp`.
 
 ---
 
