@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+DROPLET_SSH_USER=${DROPLET_SSH_USER:-"root"}
+DROPLET_SSH_HOST=${DROPLET_SSH_HOST:-"142.93.106.94"}
+DROPLET_DEBUG_LOG_PATH=${DROPLET_DEBUG_LOG_PATH:-"/var/log/rustdesk-mesh/app-debug.log"}
+
 REQUIRED_VARS=("DROPLET_SSH_USER" "DROPLET_SSH_HOST" "DROPLET_DEBUG_LOG_PATH")
 missing=()
 for var in "${REQUIRED_VARS[@]}"; do
@@ -15,10 +19,10 @@ done
 if (( ${#missing[@]} > 0 )); then
   cat <<USAGE
 [ERROR] Missing required environment variables: ${missing[*]}
-Usage:
-  DROPLET_SSH_USER=deploy \
-  DROPLET_SSH_HOST=1.2.3.4 \
-  DROPLET_DEBUG_LOG_PATH=/var/log/rustdesk-mesh/app-debug.log \
+Usage (defaults are prefilled from SoT):
+  DROPLET_SSH_USER=${DROPLET_SSH_USER} \
+  DROPLET_SSH_HOST=${DROPLET_SSH_HOST} \
+  DROPLET_DEBUG_LOG_PATH=${DROPLET_DEBUG_LOG_PATH} \
     scripts/get-error-log.sh
 USAGE
   exit 1
@@ -27,7 +31,7 @@ fi
 LOCAL_DIR="local-logs/droplet"
 LOCAL_FILE="${LOCAL_DIR}/app-debug.log"
 REMOTE="${DROPLET_SSH_USER}@${DROPLET_SSH_HOST}:${DROPLET_DEBUG_LOG_PATH}"
-STEP4_PATTERN="logs/local/Step-4-collect-error-logs-*.log"
+STEP4_PATTERN="logs/local-logs-*.tar.gz"
 STEP4_TARGET=""
 
 mkdir -p "$LOCAL_DIR"
@@ -46,17 +50,18 @@ shopt -u nullglob
 
 if (( ${#step4_candidates[@]} > 0 )); then
   step4_latest=$(ls -t "${step4_candidates[@]}" | head -n 1)
-  STEP4_TARGET="${LOCAL_DIR}/step-4-latest.log"
+  step4_basename="$(basename "$step4_latest")"
+  STEP4_TARGET="${LOCAL_DIR}/${step4_basename}"
   cp "$step4_latest" "$STEP4_TARGET"
-  echo "[get-error-log] Found Step-4 log: ${step4_latest}. Copied to ${STEP4_TARGET}."
+  echo "[get-error-log] Found Step-4 archive: ${step4_latest}. Copied to ${STEP4_TARGET}."
 else
-  echo "[get-error-log] Warning: No Step-4 log found. Skipping."
+  echo "[get-error-log] Warning: No Step-4 archive found. Skipping."
 fi
 
-git add "$LOCAL_FILE"
+git add -f "$LOCAL_FILE"
 if [[ -n "$STEP4_TARGET" ]]; then
-  git add "$STEP4_TARGET"
-  echo "[get-error-log] Adding Step-4 log to commit."
+  git add -f "$STEP4_TARGET"
+  echo "[get-error-log] Adding Step-4 archive to commit."
 fi
 
 if git diff --cached --quiet; then
