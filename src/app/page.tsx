@@ -67,10 +67,11 @@ export default function LoginPage() {
       }
 
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(
-        err?.message || "Não foi possível comunicar com o servidor. Tenta novamente.",
-      );
+    } catch (err: unknown) {
+      const message = err instanceof Error
+        ? err.message
+        : "Não foi possível comunicar com o servidor. Tenta novamente.";
+      setError(message);
     } finally {
       setLoading(false);
     }

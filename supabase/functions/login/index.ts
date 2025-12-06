@@ -63,7 +63,7 @@ async function handleRequest(req: Request) {
       return jsonResponse({ error: "method_not_allowed" }, 405, req, corsHeaders);
     }
 
-    let payload: any;
+    let payload: unknown;
     try {
       payload = await req.json();
     } catch (e) {
@@ -71,8 +71,17 @@ async function handleRequest(req: Request) {
       return jsonResponse({ error: "invalid_json", message: String(e) }, 400, req, corsHeaders);
     }
 
-    const email = payload?.email;
-    const password = payload?.password;
+    const rawEmail =
+      typeof payload === "object" && payload && "email" in payload
+        ? (payload as Record<string, unknown>).email
+        : undefined;
+    const rawPassword =
+      typeof payload === "object" && payload && "password" in payload
+        ? (payload as Record<string, unknown>).password
+        : undefined;
+
+    const email = typeof rawEmail === "string" ? rawEmail : "";
+    const password = typeof rawPassword === "string" ? rawPassword : "";
     if (!email || !password) {
       return jsonResponse(
         { error: "missing_fields", message: "Email and password required" },
@@ -118,7 +127,7 @@ async function handleRequest(req: Request) {
     );
 
     const text = await tokenResp.text();
-    let json: any = null;
+    let json: Record<string, unknown> | null = null;
     try {
       json = JSON.parse(text);
     } catch (err) {
@@ -126,10 +135,17 @@ async function handleRequest(req: Request) {
     }
 
     if (!tokenResp.ok) {
-      const errorMessage = json?.error_description || json?.msg || text;
+      const errorDescription =
+        json && typeof json.error_description === "string"
+          ? json.error_description
+          : null;
+      const errorMsgField =
+        json && typeof json.msg === "string" ? json.msg : null;
+      const errorMessage = errorDescription || errorMsgField || text;
       return jsonResponse(
         {
-          error: json?.error || "invalid_login",
+          error:
+            json && typeof json.error === "string" ? json.error : "invalid_login",
           message: errorMessage || "Invalid login credentials",
         },
         tokenResp.status,
@@ -138,7 +154,8 @@ async function handleRequest(req: Request) {
       );
     }
 
-    const accessToken = json?.access_token;
+    const accessToken =
+      json && typeof json.access_token === "string" ? json.access_token : null;
     if (!accessToken) {
       return jsonResponse(
         {
