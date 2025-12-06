@@ -28,4 +28,14 @@ npm ci --prefer-offline --no-audit --no-fund
 log "npm run build"
 npm run build
 
+BUILD_META_DIR="$ROOT_DIR/.next"
+BUILD_COMMIT_FILE="$BUILD_META_DIR/BUILD_COMMIT"
+BUILD_BRANCH_FILE="$BUILD_META_DIR/BUILD_BRANCH"
+BUILD_TIME_FILE="$BUILD_META_DIR/BUILD_TIME"
+
+log "Guardar metadados do build em $BUILD_META_DIR"
+echo "$(git rev-parse HEAD)" > "$BUILD_COMMIT_FILE"
+echo "$CURRENT_BRANCH" > "$BUILD_BRANCH_FILE"
+echo "$TIMESTAMP" > "$BUILD_TIME_FILE"
+
 log "Build concluído. Artefactos em $ROOT_DIR/.next"

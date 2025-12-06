@@ -21,6 +21,7 @@ Os passos seguintes são executados sempre via scripts com prefixo `Step-*`:
 2. **Step-2 – build local**
    - `scripts/Step-2-build-local.sh`
    - Corre `npm ci` + `npm run build` no portátil para gerar `.next` e `node_modules` já validados.
+   - Gera marcadores `.next/BUILD_COMMIT`, `.next/BUILD_BRANCH` e `.next/BUILD_TIME` para registar commit, branch e timestamp do build. O Step-5 valida estes marcadores antes de qualquer deploy.
 3. **Step-3 – testes no portátil**
    - `scripts/Step-3-test-local.sh`
    - Corre lint e testes (`npm run lint`, `npm test`). Logs ficam em `logs/local/`.
@@ -30,6 +31,7 @@ Os passos seguintes são executados sempre via scripts com prefixo `Step-*`:
 5. **Step-5 – deploy do build testado**
    - `scripts/Step-5-deploy-tested-build.sh`
    - Envia via `rsync` o código + `.next` + `node_modules` para o droplet e reinicia o serviço. **Não recompila** no droplet; reutiliza o build local testado.
+   - Usa `rsync --checksum` para enviar apenas os ficheiros cujo conteúdo mudou desde o último deploy.
 
 > ⚠️ Se precisares apenas de alinhar o código no próprio droplet (sem os artefactos locais), `scripts/update_from_github.sh` continua disponível como fallback, mas foge ao fluxo sem compilação remota.
 
