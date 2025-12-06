@@ -54,6 +54,17 @@ Key schemas of interest:
     - Always using `rustdesk.bwb.pt` (never a raw IP).
   - In futuro: deep-link / custom URL to auto-abrir RustDesk no PC.
 
+### 1.5 Infraestrutura do droplet (baseline)
+
+- DigitalOcean droplet partilhado por MeshCentral e frontend.
+- Recursos mínimos actualmente alocados:
+  - 1 GB RAM
+  - 10 GB disco
+- Sistema operativo: Ubuntu 22.04 LTS.
+- Implicações:
+  - Evitar builds pesados no servidor (seguir pipeline Step-* com build local).
+  - Monitorizar memória ao reiniciar serviços (Next.js + MeshCentral) para prevenir OOM.
+
 ## 2. Hybrid Model — Authority Split
 
 The system follows a **hybrid authority** model:

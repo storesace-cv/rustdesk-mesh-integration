@@ -63,6 +63,14 @@ O comportamento actual (observado pelos logs):
 - `sync-devices.sh` percorre `android-users.json` e vai lendo `devices.json` de cada pasta.
 - Se o `devices.json` não tiver `device_id`, o script ignora.
 
+### 1.4 DevOps / Deploy
+
+- `scripts/Step-5-deploy-tested-build.sh`:
+  - Reinicia o serviço e aguarda o frontend ficar disponível com `curl` (até 10 tentativas) antes de considerar o deploy concluído,
+    para evitar falsos negativos quando o Next.js demora a levantar.
+  - Heredoc remoto está agora protegido contra expansão local (`<<'EOF'`), evitando erros `unbound variable` quando o script corre com
+    `set -u`.
+
 ---
 
 ## 2. Tarefas para o Codex

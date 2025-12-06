@@ -48,7 +48,7 @@ rsync -avz --delete --checksum --itemize-changes \
   "$ROOT_DIR/" "$SSH_TARGET:$REMOTE_DIR/"
 
 log "Reiniciar serviço no droplet usando artefactos existentes (sem recompilar)"
-ssh "$SSH_TARGET" bash -s <<EOF2
+ssh "$SSH_TARGET" bash -s <<'EOF2'
 set -euo pipefail
 cd "$REMOTE_DIR"
 
@@ -59,7 +59,24 @@ fi
 
 systemctl restart rustdesk-frontend.service
 systemctl status rustdesk-frontend.service --no-pager
-curl -fsS -I http://127.0.0.1:3000
+
+max_attempts=10
+delay_seconds=3
+for attempt in $(seq 1 "$max_attempts"); do
+  if curl -fsS -I http://127.0.0.1:3000 >/dev/null; then
+    echo "[remote] Frontend respondeu na tentativa $attempt/$max_attempts"
+    break
+  fi
+
+  if [[ "$attempt" -eq "$max_attempts" ]]; then
+    echo "[remote][ERROR] Frontend não respondeu em http://127.0.0.1:3000 após $max_attempts tentativas" >&2
+    journalctl -u rustdesk-frontend.service -n 50 --no-pager || true
+    exit 1
+  fi
+
+  echo "[remote] Frontend ainda a iniciar (tentativa $attempt/$max_attempts). A aguardar ${delay_seconds}s..."
+  sleep "$delay_seconds"
+done
 EOF2
 
 log "Deploy concluído com sucesso a partir do build local"
