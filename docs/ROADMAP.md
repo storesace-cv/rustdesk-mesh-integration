@@ -65,8 +65,11 @@ O comportamento actual (observado pelos logs):
 
 ### 1.4 DevOps / Deploy
 
-- `scripts/Step-5-deploy-tested-build.sh` agora reinicia o serviço e aguarda o frontend ficar disponível com `curl` (até 10 tentativas)
-  antes de considerar o deploy concluído, para evitar falsos negativos quando o Next.js demora a levantar.
+- `scripts/Step-5-deploy-tested-build.sh`:
+  - Reinicia o serviço e aguarda o frontend ficar disponível com `curl` (até 10 tentativas) antes de considerar o deploy concluído,
+    para evitar falsos negativos quando o Next.js demora a levantar.
+  - Heredoc remoto está agora protegido contra expansão local (`<<'EOF'`), evitando erros `unbound variable` quando o script corre com
+    `set -u`.
 
 ---
 
