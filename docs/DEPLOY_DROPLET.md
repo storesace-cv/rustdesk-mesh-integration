@@ -21,6 +21,7 @@ Os passos seguintes são executados sempre via scripts com prefixo `Step-*`:
 2. **Step-2 – build local**
    - `scripts/Step-2-build-local.sh`
    - Corre `npm ci` + `npm run build` no portátil para gerar `.next` e `node_modules` já validados.
+   - Gera marcadores `.next/BUILD_COMMIT`, `.next/BUILD_BRANCH` e `.next/BUILD_TIME` para registar commit, branch e timestamp do build. O Step-5 valida estes marcadores antes de qualquer deploy.
 3. **Step-3 – testes no portátil**
    - `scripts/Step-3-test-local.sh`
    - Corre lint e testes (`npm run lint`, `npm test`). Logs ficam em `logs/local/`.

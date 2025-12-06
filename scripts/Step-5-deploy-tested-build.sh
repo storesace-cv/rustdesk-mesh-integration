@@ -27,6 +27,15 @@ fi
 
 [[ -d "$ROOT_DIR/.next" ]] || { log "ERRO: .next não encontrado. Corre Step-2 antes do deploy."; exit 1; }
 [[ -d "$ROOT_DIR/node_modules" ]] || { log "ERRO: node_modules não encontrado. Corre Step-2 antes do deploy."; exit 1; }
+[[ -f "$ROOT_DIR/.next/BUILD_COMMIT" ]] || { log "ERRO: falta .next/BUILD_COMMIT. Corre Step-2 para gerar artefactos alinhados com o código."; exit 1; }
+BUILD_COMMIT="$(cat "$ROOT_DIR/.next/BUILD_COMMIT")"
+BUILD_BRANCH="$(cat "$ROOT_DIR/.next/BUILD_BRANCH" 2>/dev/null || true)"
+BUILD_TIME="$(cat "$ROOT_DIR/.next/BUILD_TIME" 2>/dev/null || true)"
+CURRENT_COMMIT="$(git rev-parse HEAD)"
+if [[ "$BUILD_COMMIT" != "$CURRENT_COMMIT" ]]; then
+  log "ERRO: o artefacto em .next foi construído em $BUILD_TIME (branch '$BUILD_BRANCH', commit $BUILD_COMMIT) mas o código actual está em $CURRENT_COMMIT. Corre Step-2 para gerar um build recente antes do deploy."
+  exit 1
+fi
 
 log "A enviar build já testado para $SSH_TARGET:$REMOTE_DIR (log: $LOG_FILE)"
 log "rsync vai calcular checksums para enviar apenas ficheiros alterados desde o último deploy"
