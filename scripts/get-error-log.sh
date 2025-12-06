@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+DROPLET_SSH_USER=${DROPLET_SSH_USER:-"root"}
+DROPLET_SSH_HOST=${DROPLET_SSH_HOST:-"142.93.106.94"}
+DROPLET_DEBUG_LOG_PATH=${DROPLET_DEBUG_LOG_PATH:-"/var/log/rustdesk-mesh/app-debug.log"}
+
 REQUIRED_VARS=("DROPLET_SSH_USER" "DROPLET_SSH_HOST" "DROPLET_DEBUG_LOG_PATH")
 missing=()
 for var in "${REQUIRED_VARS[@]}"; do
@@ -15,10 +19,10 @@ done
 if (( ${#missing[@]} > 0 )); then
   cat <<USAGE
 [ERROR] Missing required environment variables: ${missing[*]}
-Usage:
-  DROPLET_SSH_USER=deploy \
-  DROPLET_SSH_HOST=1.2.3.4 \
-  DROPLET_DEBUG_LOG_PATH=/var/log/rustdesk-mesh/app-debug.log \
+Usage (defaults are prefilled from SoT):
+  DROPLET_SSH_USER=${DROPLET_SSH_USER} \
+  DROPLET_SSH_HOST=${DROPLET_SSH_HOST} \
+  DROPLET_DEBUG_LOG_PATH=${DROPLET_DEBUG_LOG_PATH} \
     scripts/get-error-log.sh
 USAGE
   exit 1
