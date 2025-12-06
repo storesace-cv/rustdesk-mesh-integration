@@ -4,11 +4,43 @@ export const config = { verify_jwt: false };
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+const DEFAULT_CORS_HEADERS = {
+  "Access-Control-Allow-Methods": "POST,OPTIONS",
+  "Access-Control-Allow-Headers": "authorization,content-type,apikey",
+  "Access-Control-Max-Age": "86400",
+};
+
+const FORBIDDEN_CORS_HEADERS = {
+  ...DEFAULT_CORS_HEADERS,
+  "Access-Control-Allow-Origin": "false",
+};
+
+function buildCorsHeaders(req: Request) {
+  const origin = req.headers.get("origin");
+  if (ALLOWED_ORIGINS.length > 0 && (!origin || !ALLOWED_ORIGINS.includes(origin))) {
+    return null;
+  }
+
+  return { ...DEFAULT_CORS_HEADERS, "Access-Control-Allow-Origin": origin || "*" } as const;
+}
+
+function jsonResponse(
+  body: Record<string, unknown>,
+  status = 200,
+  req?: Request,
+  corsHeaders?: Record<string, string>,
+) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(req ? corsHeaders || buildCorsHeaders(req) || {} : {}),
+    },
   });
 }
 
@@ -18,8 +50,17 @@ addEventListener("fetch", (event) => {
 
 async function handleRequest(req: Request) {
   try {
+    const corsHeaders = buildCorsHeaders(req);
+    if (!corsHeaders) {
+      return new Response(null, { status: 403, headers: FORBIDDEN_CORS_HEADERS });
+    }
+
+    if (req.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
+
     if (req.method !== "POST") {
-      return jsonResponse({ error: "method_not_allowed" }, 405);
+      return jsonResponse({ error: "method_not_allowed" }, 405, req, corsHeaders);
     }
 
     let payload: any;
@@ -27,13 +68,18 @@ async function handleRequest(req: Request) {
       payload = await req.json();
     } catch (e) {
       console.error("[login] invalid json body:", String(e));
-      return jsonResponse({ error: "invalid_json", message: String(e) }, 400);
+      return jsonResponse({ error: "invalid_json", message: String(e) }, 400, req, corsHeaders);
     }
 
     const email = payload?.email;
     const password = payload?.password;
     if (!email || !password) {
-      return jsonResponse({ error: "missing_fields", message: "Email and password required" }, 400);
+      return jsonResponse(
+        { error: "missing_fields", message: "Email and password required" },
+        400,
+        req,
+        corsHeaders,
+      );
     }
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -47,6 +93,8 @@ async function handleRequest(req: Request) {
           message: `Missing env: ${missing.join(", ")}`,
         },
         500,
+        req,
+        corsHeaders,
       );
     }
 
@@ -85,6 +133,8 @@ async function handleRequest(req: Request) {
           message: errorMessage || "Invalid login credentials",
         },
         tokenResp.status,
+        req,
+        corsHeaders,
       );
     }
 
@@ -96,12 +146,19 @@ async function handleRequest(req: Request) {
           message: "Token endpoint did not return access_token",
         },
         502,
+        req,
+        corsHeaders,
       );
     }
 
-    return jsonResponse({ token: accessToken }, 200);
+    return jsonResponse({ token: accessToken }, 200, req, corsHeaders);
   } catch (err) {
     console.error("[login] handler error:", err);
-    return jsonResponse({ error: "internal_error", message: String(err) }, 500);
+    return jsonResponse(
+      { error: "internal_error", message: String(err) },
+      500,
+      req,
+      buildCorsHeaders(req) ?? undefined,
+    );
   }
 }
