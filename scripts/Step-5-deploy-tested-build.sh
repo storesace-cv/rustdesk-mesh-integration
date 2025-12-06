@@ -29,7 +29,8 @@ fi
 [[ -d "$ROOT_DIR/node_modules" ]] || { log "ERRO: node_modules não encontrado. Corre Step-2 antes do deploy."; exit 1; }
 
 log "A enviar build já testado para $SSH_TARGET:$REMOTE_DIR (log: $LOG_FILE)"
-rsync -avz --delete \
+log "rsync vai calcular checksums para enviar apenas ficheiros alterados desde o último deploy"
+rsync -avz --delete --checksum --itemize-changes \
   --exclude ".git" \
   --exclude "logs" \
   --exclude "local-logs" \
