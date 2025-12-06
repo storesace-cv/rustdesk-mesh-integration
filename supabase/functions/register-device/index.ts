@@ -157,14 +157,40 @@ async function handleRequest(req: Request) {
 
     const authInfo = await fetchAuthUser(jwt);
 
-    let payload: any;
+    let payload: unknown;
     try {
       payload = await req.json();
     } catch (e) {
       return jsonResponse({ error: "invalid_json", message: String(e) }, 400);
     }
 
-    const { device_id, mesh_username, friendly_name, notes, last_seen } = payload ?? {};
+    const payloadObj =
+      typeof payload === "object" && payload !== null
+        ? (payload as Record<string, unknown>)
+        : {};
+
+    const device_id =
+      typeof payloadObj.device_id === "string"
+        ? payloadObj.device_id
+        : "";
+    const mesh_username =
+      typeof payloadObj.mesh_username === "string"
+        ? payloadObj.mesh_username
+        : undefined;
+    const friendly_name =
+      typeof payloadObj.friendly_name === "string"
+        ? payloadObj.friendly_name
+        : undefined;
+    const notes =
+      typeof payloadObj.notes === "string"
+        ? payloadObj.notes
+        : payloadObj.notes === null
+          ? null
+          : undefined;
+    const last_seen =
+      typeof payloadObj.last_seen === "string"
+        ? payloadObj.last_seen
+        : undefined;
     if (!device_id) {
       return jsonResponse({ error: "invalid_payload", message: "device_id is required" }, 400);
     }

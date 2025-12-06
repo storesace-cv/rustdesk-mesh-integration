@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 
@@ -36,6 +37,13 @@ export default function DashboardPage() {
       return;
     }
     setJwt(token);
+  }, [router]);
+
+  const handleLogout = useCallback(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("rustdesk_jwt");
+    }
+    router.push("/");
   }, [router]);
 
   // Gera QR assim que soubermos que o utilizador está autenticado
@@ -101,7 +109,7 @@ export default function DashboardPage() {
         } else {
           setErrorMsg(null);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Erro get-devices:", err);
         setErrorMsg("Erro ao carregar dispositivos.");
         setDevices([]);
@@ -111,14 +119,7 @@ export default function DashboardPage() {
     }
 
     fetchDevices();
-  }, [jwt]);
-
-  function handleLogout() {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("rustdesk_jwt");
-    }
-    router.push("/");
-  }
+  }, [jwt, handleLogout]);
 
   const grouped = groupDevices(devices);
 
@@ -144,10 +145,13 @@ export default function DashboardPage() {
           <div className="flex flex-col items-center">
             <h2 className="text-lg font-medium mb-3">QR-Code de Configuração</h2>
             {qrDataUrl ? (
-              <img
+              <Image
                 src={qrDataUrl}
                 alt="RustDesk QR"
+                width={220}
+                height={220}
                 className="rounded-lg bg-white p-2"
+                unoptimized
               />
             ) : (
               <div className="w-[220px] h-[220px] rounded-lg bg-slate-800 flex items-center justify-center text-sm text-slate-400">

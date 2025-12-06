@@ -110,14 +110,19 @@ async function handleRequest(req: Request) {
       ? { id: null, isService: true }
       : await fetchAuthUser(jwt);
 
-    let payload: any;
+    let payload: unknown;
     try {
       payload = await req.json();
     } catch (e) {
       return jsonResponse({ error: "invalid_json", message: String(e) }, 400);
     }
 
-    const { device_id } = payload ?? {};
+    const payloadObj =
+      typeof payload === "object" && payload !== null
+        ? (payload as Record<string, unknown>)
+        : {};
+    const device_id =
+      typeof payloadObj.device_id === "string" ? payloadObj.device_id : "";
     if (!device_id) {
       return jsonResponse({ error: "invalid_payload", message: "device_id is required" }, 400);
     }
