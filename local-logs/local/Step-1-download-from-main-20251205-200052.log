@@ -1,0 +1,4 @@
+[Step-1][2025-12-05T20:00:52+0000] Sincronizar a branch local 'my-rustdesk-mesh-integration' com origin/main (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-1-download-from-main-20251205-200052.log)
+[update_from_github][2025-12-05T20:00:52+0000] Repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
+[update_from_github][2025-12-05T20:00:52+0000] Sincronizar 'my-rustdesk-mesh-integration' a partir de 'origin/main'
+[update_from_github][2025-12-05T20:00:52+0000] ERRO: existem alterações não commitadas em ficheiros rastreados. Exporta ALLOW_DIRTY_RESET=1 para forçar reset hard.
