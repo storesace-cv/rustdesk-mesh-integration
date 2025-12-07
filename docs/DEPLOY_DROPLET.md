@@ -32,7 +32,7 @@ Os passos seguintes são executados sempre via scripts com prefixo `Step-*`:
 5. **Step-5 – recolher logs em caso de erro**
    - `scripts/Step-5-collect-error-logs.sh`
    - Comprime os logs de `logs/local/` e `logs/deploy/` para partilha sempre que algum passo falha (por exemplo, se o Step-4 gerar erros de deploy).
-   - Compat: `scripts/Step-4-collect-error-logs.sh` redirecciona para o Step-5 para quem ainda usar o nome antigo.
+   - O alias antigo `scripts/Step-4-collect-error-logs.sh` foi removido para manter numeração única; actualiza pipelines/merges para chamarem o Step-5 directamente.
 
 > ⚠️ Se precisares apenas de alinhar o código no próprio droplet (sem os artefactos locais), `scripts/update_from_github.sh` continua disponível como fallback, mas foge ao fluxo sem compilação remota.
 

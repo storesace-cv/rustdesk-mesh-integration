@@ -24,7 +24,7 @@ para que o Codex / Softgen consiga continuar o desenvolvimento.
   - `Step-4-deploy-tested-build.sh` – envia o build já testado para o droplet e reinicia o serviço sem recompilar.
   - `Step-5-collect-error-logs.sh` – junta logs de `logs/local/` e `logs/deploy/` após qualquer falha (incluindo no Step-4),
     gera um bundle numerado e actualiza o symlink `logs-latest.tar.gz`.
-  - Compat: `Step-4-collect-error-logs.sh` foi mantido como shim e redirecciona para o Step-5 (útil para fluxos antigos ou merges).
+  - O nome antigo `Step-4-collect-error-logs.sh` foi descontinuado para manter a numeração única: actualiza pipelines/scripts para chamarem o `Step-5-collect-error-logs.sh` directamente.
   - `get-error-log.sh` – numera cada recolha, guarda o ficheiro em `logs/droplet/run-<id>-app-debug.log`, actualiza o symlink `latest-app-debug.log` e **publica sempre**: copia `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático (use `--no-publish`/`PUBLISH=0` apenas se quiser evitar este passo).
   - `sync-devices.sh` – ler devices.json do MeshCentral e enviar para Supabase.
   - `update_from_github.sh` – sincronização rápida no próprio droplet (fallback).

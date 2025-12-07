@@ -70,7 +70,7 @@ O comportamento actual (observado pelos logs):
     para evitar falsos negativos quando o Next.js demora a levantar.
   - Heredoc remoto está agora protegido contra expansão local (`<<'EOF'`), evitando erros `unbound variable` quando o script corre com
     `set -u`.
-  - Compat: `Step-4-collect-error-logs.sh` existe apenas como shim e chama o novo `Step-5-collect-error-logs.sh` (para quem ainda tinha o nome antigo em pipelines ou merges).
+  - O alias antigo `Step-4-collect-error-logs.sh` foi removido para manter a numeração única; actualiza qualquer pipeline/merge para invocar directamente o `Step-5-collect-error-logs.sh`.
 - Sistema de debug centralizado:
   - Variáveis `APP_DEBUG_ENABLED` e `APP_DEBUG_LOG_PATH` controlam um ficheiro único (`/var/log/rustdesk-mesh/app-debug.log` por
     defeito, com fallback para `logs/app-debug.log`).
@@ -211,7 +211,7 @@ Estado em 2025-12-05: `start.sh` adicionado na raiz do repositório para servir 
     3. `Step-3-test-local.sh` – lint + testes antes de qualquer envio (usa `eslint .` directo para evitar erros de resolução de directório na CLI do Next.js).
     4. `Step-4-deploy-tested-build.sh` – `rsync` do build já testado; **não** corre `npm run build` no droplet, apenas reinicia `rustdesk-frontend.service`.
     5. `Step-5-collect-error-logs.sh` – empacota `logs/local/` e `logs/deploy/` sempre que algum passo falha (incluindo erros de deploy do Step-4) para facilitar partilha.
-    - Compat: `Step-4-collect-error-logs.sh` ficou apenas como shim para o Step-5 (para pipelines/merges que ainda referenciem o nome antigo).
+    - O alias `Step-4-collect-error-logs.sh` foi removido para evitar passos com o mesmo número; ajusta quaisquer scripts ou merges legados para usarem directamente o Step-5.
   - [ ] `update_from_github.sh` mantém-se como fallback no droplet (com build remoto) mas não é o caminho principal.
   - [ ] Logs locais em `logs/local/`, logs de deploy em `logs/deploy/`.
   - [x] Ficheiros desactualizados removidos de `scripts/` para reduzir confusão (`run-deploy-and-collect.sh`).
