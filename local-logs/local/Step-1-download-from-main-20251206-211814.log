@@ -1,0 +1,17 @@
+[Step-1][2025-12-06T21:18:14+0000] Sincronizar a branch local 'my-rustdesk-mesh-integration' com origin/main (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-1-download-from-main-20251206-211814.log)
+[update_from_github][2025-12-06T21:18:14+0000] Repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
+[update_from_github][2025-12-06T21:18:14+0000] Sincronizar 'my-rustdesk-mesh-integration' a partir de 'origin/main'
+[update_from_github][2025-12-06T21:18:14+0000] git fetch --prune origin
+From https://github.com/storesace-cv/rustdesk-mesh-integration
+ * [new branch]      codex/fix-missing-environment-variables-for-script -> origin/codex/fix-missing-environment-variables-for-script
+   05a0e58..4224d8d  main       -> origin/main
+[update_from_github][2025-12-06T21:18:15+0000] Checkout para my-rustdesk-mesh-integration
+Already on 'my-rustdesk-mesh-integration'
+M	tsconfig.json
+Your branch is ahead of 'origin/my-rustdesk-mesh-integration' by 44 commits.
+  (use "git push" to publish your local commits)
+[update_from_github][2025-12-06T21:18:15+0000] Reset hard para origin/main
+HEAD is now at 4224d8d Merge pull request #47 from storesace-cv/codex/fix-missing-environment-variables-for-script
+[update_from_github][2025-12-06T21:18:15+0000] Limpar ficheiros não rastreados (git clean -fd)
+[update_from_github][2025-12-06T21:18:15+0000] Branch 'my-rustdesk-mesh-integration' agora espelha origin/main.
+[Step-1][2025-12-06T21:18:15+0000] Repositório actualizado a partir de origin/main para 'my-rustdesk-mesh-integration'

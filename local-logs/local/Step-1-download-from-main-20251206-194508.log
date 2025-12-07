@@ -1,0 +1,17 @@
+[Step-1][2025-12-06T19:45:08+0000] Sincronizar a branch local 'my-rustdesk-mesh-integration' com origin/main (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-1-download-from-main-20251206-194508.log)
+[update_from_github][2025-12-06T19:45:08+0000] Repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
+[update_from_github][2025-12-06T19:45:08+0000] Sincronizar 'my-rustdesk-mesh-integration' a partir de 'origin/main'
+[update_from_github][2025-12-06T19:45:08+0000] git fetch --prune origin
+From https://github.com/storesace-cv/rustdesk-mesh-integration
+ * [new branch]      codex/fix-linting-errors-in-project -> origin/codex/fix-linting-errors-in-project
+   c17ad2d..27cfaf2  main       -> origin/main
+[update_from_github][2025-12-06T19:45:09+0000] Checkout para my-rustdesk-mesh-integration
+Already on 'my-rustdesk-mesh-integration'
+M	tsconfig.json
+Your branch is ahead of 'origin/my-rustdesk-mesh-integration' by 28 commits.
+  (use "git push" to publish your local commits)
+[update_from_github][2025-12-06T19:45:10+0000] Reset hard para origin/main
+HEAD is now at 27cfaf2 Merge pull request #40 from storesace-cv/codex/fix-linting-errors-in-project
+[update_from_github][2025-12-06T19:45:10+0000] Limpar ficheiros não rastreados (git clean -fd)
+[update_from_github][2025-12-06T19:45:10+0000] Branch 'my-rustdesk-mesh-integration' agora espelha origin/main.
+[Step-1][2025-12-06T19:45:10+0000] Repositório actualizado a partir de origin/main para 'my-rustdesk-mesh-integration'

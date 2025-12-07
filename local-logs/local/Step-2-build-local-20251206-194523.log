@@ -1,0 +1,44 @@
+[Step-2][2025-12-06T19:45:23+0000] Iniciar build local do frontend (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-2-build-local-20251206-194523.log)
+[Step-2][2025-12-06T19:45:23+0000] npm ci --prefer-offline --no-audit --no-fund
+
+added 499 packages in 6m
+[Step-2][2025-12-06T19:51:20+0000] npm run build
+
+> rustdesk-mesh-integration@0.1.0 build
+> next build
+
+   ▲ Next.js 16.0.6 (Turbopack)
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 10.3s
+   Running TypeScript ...
+
+   We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+   	- include was updated to add '.next/types/**/*.ts'
+   	- include was updated to add '.next/dev/types/**/*.ts'
+   	- plugins was updated to add { name: 'next' }
+
+   The following mandatory changes were made to your tsconfig.json:
+
+   	- jsx was set to react-jsx (next.js uses the React automatic runtime)
+
+   Collecting page data using 9 workers ...
+   Generating static pages using 9 workers (0/5) ...
+   Generating static pages using 9 workers (1/5) 
+   Generating static pages using 9 workers (2/5) 
+   Generating static pages using 9 workers (3/5) 
+ ✓ Generating static pages using 9 workers (5/5) in 555.1ms
+   Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+└ ○ /dashboard
+
+
+○  (Static)  prerendered as static content
+
+[Step-2][2025-12-06T19:58:42+0000] Build concluído. Artefactos em /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/.next
