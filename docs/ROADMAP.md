@@ -75,9 +75,9 @@ O comportamento actual (observado pelos logs):
     defeito, com fallback para `logs/app-debug.log`).
   - O ficheiro é truncado a cada arranque (via `instrumentation.ts`) e regista arranque + fluxo de login quando `APP_DEBUG_ENABLED=true`.
   - Rota `/api/login` passa a mediar o login para logar cada passo (sem expor passwords/tokens).
-  - `scripts/get-error-log.sh` copia o ficheiro remoto para `local-logs/droplet/app-debug.log` usando `scp` e força `git add -f` para ficheiros ignorados; verifica se o branch local está desactualizado antes de tentar o `git push` e pede `git pull --rebase` em vez de falhar com non-fast-forward.
-  - O script detecta o arquivo mais recente gerado pelo `Step-4-collect-error-logs.sh` (`logs/local-logs-*.tar.gz`), copia-o para `local-logs/droplet/` e inclui-o no commit se existir (não bloqueia se faltar).
-  - O script já preenche `DROPLET_SSH_USER`, `DROPLET_SSH_HOST` e `DROPLET_DEBUG_LOG_PATH` com os valores do SoT (root @ 142.93.106.94 e `/var/log/rustdesk-mesh/app-debug.log`).
+  - `scripts/get-error-log.sh` coloca o `app-debug.log` em `logs/droplet/` e aceita `--publish`/`PUBLISH=1` para preparar partilha manual no GitHub.
+  - `scripts/publish-logs-to-github.sh` replica `logs/` para `local-logs/` (opcional `--stage` para aplicar `git add -f`).
+  - Pastas de logs antigas como `local-logslocal/` foram removidas; `logs/` é só local e `local-logs/` apenas para publicação.
 
 ---
 
