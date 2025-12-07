@@ -4,6 +4,7 @@ export const config = { verify_jwt: false };
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const LOGIN_TIMEOUT_MS = Number(Deno.env.get("LOGIN_TIMEOUT_MS")) || 15000;
 const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") || "")
   .split(",")
   .map((o) => o.trim())
@@ -113,18 +114,45 @@ async function handleRequest(req: Request) {
       password: password,
     }).toString();
 
-    const tokenResp = await fetch(
-      `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          apikey: SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), LOGIN_TIMEOUT_MS);
+
+    let tokenResp: Response;
+    try {
+      tokenResp = await fetch(
+        `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            apikey: SUPABASE_SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body,
+          signal: controller.signal,
         },
-        body,
-      },
-    );
+      );
+    } catch (err) {
+      clearTimeout(timeout);
+
+      const message = err instanceof Error ? err.message : String(err);
+      const isAbort = err instanceof DOMException && err.name === "AbortError";
+
+      console.error("[login] auth token request failed", message);
+      return jsonResponse(
+        {
+          error: isAbort ? "upstream_timeout" : "token_request_failed",
+          message: isAbort
+            ? "Login upstream timed out"
+            : "Failed to contact auth service",
+        },
+        isAbort ? 504 : 502,
+        req,
+        corsHeaders,
+      );
+    }
+
+    clearTimeout(timeout);
 
     const text = await tokenResp.text();
     let json: Record<string, unknown> | null = null;

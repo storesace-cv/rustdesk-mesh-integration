@@ -75,6 +75,9 @@ export async function POST(req: Request) {
     emailMasked: maskEmail(email),
   });
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
   try {
     const response = await fetch(targetUrl, {
       method: "POST",
@@ -83,6 +86,7 @@ export async function POST(req: Request) {
         Authorization: `Bearer ${anonKey}`,
       },
       body: JSON.stringify({ email, password }),
+      signal: controller.signal,
     });
 
     const responseBody = await response.json().catch(() => ({}));
@@ -116,11 +120,21 @@ export async function POST(req: Request) {
     logDebug("login", "Login request completed", { requestId, durationMs });
     return NextResponse.json({ token });
   } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      logWarn("login", "Supabase login timed out", { requestId, clientIp });
+      return NextResponse.json(
+        { message: "Tempo limite ao contactar o serviço de login." },
+        { status: 504 },
+      );
+    }
+
     logError("login", "Unhandled error during login", {
       requestId,
       clientIp,
       error: safeError(error),
     });
     return NextResponse.json({ message: "Erro interno ao processar login." }, { status: 500 });
+  } finally {
+    clearTimeout(timeout);
   }
 }
