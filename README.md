@@ -23,7 +23,7 @@ para que o Codex / Softgen consiga continuar o desenvolvimento.
   - `Step-3-test-local.sh` – corre lint + testes no portátil.
   - `Step-4-collect-error-logs.sh` – comprime os logs locais em caso de erro, com run-id e symlink `local-logs-latest.tar.gz`.
   - `Step-5-deploy-tested-build.sh` – envia o build já testado para o droplet e reinicia o serviço sem recompilar.
-  - `get-error-log.sh` – numera cada recolha, guarda o ficheiro em `logs/droplet/run-<id>-app-debug.log`, actualiza o symlink `latest-app-debug.log` e, com `--publish`, copia `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático.
+  - `get-error-log.sh` – numera cada recolha, guarda o ficheiro em `logs/droplet/run-<id>-app-debug.log`, actualiza o symlink `latest-app-debug.log` e **publica sempre**: copia `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático (use `--no-publish`/`PUBLISH=0` apenas se quiser evitar este passo).
   - `sync-devices.sh` – ler devices.json do MeshCentral e enviar para Supabase.
   - `update_from_github.sh` – sincronização rápida no próprio droplet (fallback).
   - `update_supabase.sh` – operações da Supabase CLI.
@@ -47,7 +47,7 @@ Ver `docs/ROADMAP.md` para detalhes e tarefas abertas.
     - `logs/droplet/run-<id>-app-debug.log` + symlink `latest-app-debug.log` para a recolha mais recente.
     - `logs/archive/run-<id>-local-logs-<timestamp>.tar.gz` + symlink `local-logs-latest.tar.gz` para o último bundle do Step-4.
 - `local-logs/` (apenas GitHub):
-  - Recebe ficheiros copiados via `scripts/get-error-log.sh --publish` quando for necessário partilhar logs.
+  - Recebe ficheiros copiados automaticamente via `scripts/get-error-log.sh` sempre que o script corre (a menos que use `--no-publish`).
   - Não deve ser utilizado como pasta de trabalho local; limpa-o depois de publicar se não precisares das cópias.
 
 Pastas antigas como `local-logslocal/` não têm uso e foram removidas.
