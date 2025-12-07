@@ -1,0 +1,37 @@
+[Step-1][2025-12-05T19:56:14+0000] Sincronizar a branch local 'my-rustdesk-mesh-integration' com origin/main (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-1-download-from-main-20251205-195614.log)
+[update_from_github][2025-12-05T19:56:14+0000] Repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
+[update_from_github][2025-12-05T19:56:14+0000] Sincronizar 'my-rustdesk-mesh-integration' a partir de 'origin/main'
+[update_from_github][2025-12-05T19:56:14+0000] git fetch --prune origin
+From https://github.com/storesace-cv/rustdesk-mesh-integration
+ * [new branch]      codex/fix-linting-directory-error -> origin/codex/fix-linting-directory-error
+ * [new branch]      codex/set-allow_dirty_reset=1-in-script -> origin/codex/set-allow_dirty_reset=1-in-script
+   eee838f..f97224b  main       -> origin/main
+[update_from_github][2025-12-05T19:56:15+0000] Checkout para my-rustdesk-mesh-integration
+Already on 'my-rustdesk-mesh-integration'
+D	local-logs/deploy/deploy-20251205-155203.log
+D	local-logs/deploy/deploy-20251205-171013.log
+D	local-logs/deploy/deploy-20251205-172430.log
+D	local-logs/deploy/deploy-20251205-173834.log
+D	local-logs/deploy/deploy-20251205-175942.log
+D	local-logs/deploy/deploy-20251205-181223.log
+D	local-logs/deploy/install-debug-20251205-174554.log
+D	local-logs/droplet/install-debug-20251205-175129.log
+D	local-logs/droplet/install-debug-20251205-175942.log
+D	local-logs/droplet/install-debug-20251205-181223.log
+D	local-logs/droplet/readme.md
+D	local-logs/supabase/supabase-update-20251205-155203.log
+D	local-logs/supabase/supabase-update-20251205-171013.log
+D	local-logs/supabase/supabase-update-20251205-172430.log
+D	local-logs/supabase/supabase-update-20251205-173834.log
+D	local-logs/supabase/supabase-update-20251205-175129.log
+D	local-logs/supabase/supabase-update-20251205-175942.log
+D	local-logs/supabase/supabase-update-20251205-181223.log
+M	scripts/Step-1-download-from-main.sh
+M	tsconfig.json
+Your branch is ahead of 'origin/my-rustdesk-mesh-integration' by 11 commits.
+  (use "git push" to publish your local commits)
+[update_from_github][2025-12-05T19:56:15+0000] Reset hard para origin/main
+HEAD is now at f97224b Merge pull request #35 from storesace-cv/codex/fix-linting-directory-error
+[update_from_github][2025-12-05T19:56:15+0000] Limpar ficheiros não rastreados (git clean -fd)
+[update_from_github][2025-12-05T19:56:15+0000] Branch 'my-rustdesk-mesh-integration' agora espelha origin/main.
+[Step-1][2025-12-05T19:56:15+0000] Repositório actualizado a partir de origin/main para 'my-rustdesk-mesh-integration'

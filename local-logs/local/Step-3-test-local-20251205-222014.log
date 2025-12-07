@@ -1,0 +1,7 @@
+[Step-3][2025-12-05T22:20:14+0000] Iniciar testes e lint (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-3-test-local-20251205-222014.log)
+[Step-3][2025-12-05T22:20:14+0000] npm run lint
+
+> rustdesk-mesh-integration@0.1.0 lint
+> eslint .
+
+sh: eslint: command not found

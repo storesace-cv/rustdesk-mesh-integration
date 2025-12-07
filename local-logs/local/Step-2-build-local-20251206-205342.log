@@ -1,0 +1,193 @@
+[Step-2][2025-12-06T20:53:42+0000] Iniciar build local do frontend (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-2-build-local-20251206-205342.log)
+[Step-2][2025-12-06T20:53:42+0000] npm ci --prefer-offline --no-audit --no-fund
+
+added 499 packages in 2m
+[Step-2][2025-12-06T20:55:35+0000] npm run build
+
+> rustdesk-mesh-integration@0.1.0 build
+> next build
+
+   ▲ Next.js 16.0.6 (Turbopack)
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+Turbopack build encountered 8 warnings:
+./src/instrumentation.ts:32:31
+Ecmascript file had an error
+[0m [90m 30 |[39m [36mfunction[39m readPackageVersion() {
+ [90m 31 |[39m   [36mtry[39m {
+[31m[1m>[22m[39m[90m 32 |[39m     [36mconst[39m pkgPath [33m=[39m path[33m.[39mjoin(process[33m.[39mcwd()[33m,[39m [32m"package.json"[39m)[33m;[39m
+ [90m    |[39m                               [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 33 |[39m     [36mconst[39m raw [33m=[39m [33mJSON[39m[33m.[39mparse(fs[33m.[39mreadFileSync(pkgPath[33m,[39m [32m"utf-8"[39m)) [36mas[39m { version[33m?[39m[33m:[39m string }[33m;[39m
+ [90m 34 |[39m     [36mreturn[39m raw[33m.[39mversion [33m||[39m [32m"unknown"[39m[33m;[39m
+ [90m 35 |[39m   } [36mcatch[39m (error) {[0m
+
+A Node.js API is used (process.cwd at line: 32) which is not supported in the Edge Runtime.
+Learn more: https://nextjs.org/docs/api-reference/edge-runtime
+
+
+./src/instrumentation.ts:16:18
+Ecmascript file had an error
+[0m [90m 14 |[39m   [36mconst[39m packageVersion [33m=[39m readPackageVersion()[33m;[39m
+ [90m 15 |[39m   logInfo([32m"startup"[39m[33m,[39m [32m"Runtime and app metadata"[39m[33m,[39m {
+[31m[1m>[22m[39m[90m 16 |[39m     nodeVersion[33m:[39m process[33m.[39mversion[33m,[39m
+ [90m    |[39m                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 17 |[39m     platform[33m:[39m [32m`${os.type()} ${os.release()} (${os.arch()})`[39m[33m,[39m
+ [90m 18 |[39m     appVersion[33m:[39m packageVersion[33m,[39m
+ [90m 19 |[39m     gitCommit[33m:[39m process[33m.[39menv[33m.[39m[33mGIT_COMMIT[39m [33m||[39m process[33m.[39menv[33m.[39m[33mVERCEL_GIT_COMMIT_SHA[39m [33m||[39m [32m"unknown"[39m[33m,[39m[0m
+
+A Node.js API is used (process.version at line: 16) which is not supported in the Edge Runtime.
+Learn more: https://nextjs.org/docs/api-reference/edge-runtime
+
+
+./src/instrumentation.ts:1:1
+Ecmascript file had an error
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m fs [36mfrom[39m [32m"fs"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m os [36mfrom[39m [32m"os"[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m path [36mfrom[39m [32m"path"[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+A Node.js module is loaded ('fs' at line 1) which is not supported in the Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+
+
+./src/instrumentation.ts:2:1
+Ecmascript file had an error
+[0m [90m 1 |[39m [36mimport[39m fs [36mfrom[39m [32m"fs"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m os [36mfrom[39m [32m"os"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 3 |[39m [36mimport[39m path [36mfrom[39m [32m"path"[39m[33m;[39m
+ [90m 4 |[39m
+ [90m 5 |[39m [36mimport[39m { initializeDebugLogger[33m,[39m logDebug[33m,[39m logError[33m,[39m logInfo[33m,[39m loggerState[33m,[39m maskedValue[33m,[39m safeError } [36mfrom[39m [32m"@/lib/debugLogger"[39m[33m;[39m[0m
+
+A Node.js module is loaded ('os' at line 2) which is not supported in the Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+
+
+./src/instrumentation.ts:3:1
+Ecmascript file had an error
+[0m [90m 1 |[39m [36mimport[39m fs [36mfrom[39m [32m"fs"[39m[33m;[39m
+ [90m 2 |[39m [36mimport[39m os [36mfrom[39m [32m"os"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m path [36mfrom[39m [32m"path"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 4 |[39m
+ [90m 5 |[39m [36mimport[39m { initializeDebugLogger[33m,[39m logDebug[33m,[39m logError[33m,[39m logInfo[33m,[39m loggerState[33m,[39m maskedValue[33m,[39m safeError } [36mfrom[39m [32m"@/lib/debugLogger"[39m[33m;[39m
+ [90m 6 |[39m[0m
+
+A Node.js module is loaded ('path' at line 3) which is not supported in the Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+
+
+./src/lib/debugLogger.ts:14:35
+Ecmascript file had an error
+[0m [90m 12 |[39m
+ [90m 13 |[39m [36mconst[39m configuredLogPath [33m=[39m process[33m.[39menv[33m.[39m[33mAPP_DEBUG_LOG_PATH[39m [33m||[39m [32m"/var/log/rustdesk-mesh/app-debug.log"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mconst[39m fallbackLogPath [33m=[39m path[33m.[39mjoin(process[33m.[39mcwd()[33m,[39m [32m"logs"[39m[33m,[39m [32m"app-debug.log"[39m)[33m;[39m
+ [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m
+ [90m 16 |[39m [36mconst[39m state[33m:[39m [33mLoggerState[39m [33m=[39m {
+ [90m 17 |[39m   initialized[33m:[39m [36mfalse[39m[33m,[39m[0m
+
+A Node.js API is used (process.cwd at line: 14) which is not supported in the Edge Runtime.
+Learn more: https://nextjs.org/docs/api-reference/edge-runtime
+
+Import traces:
+  App Route:
+    ./src/lib/debugLogger.ts
+    ./src/app/api/login/route.ts
+
+  Edge Instrumentation:
+    ./src/lib/debugLogger.ts
+    ./src/instrumentation.ts
+
+  Instrumentation:
+    ./src/lib/debugLogger.ts
+    ./src/instrumentation.ts
+
+
+./src/lib/debugLogger.ts:1:1
+Ecmascript file had an error
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m fs [36mfrom[39m [32m"fs"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m path [36mfrom[39m [32m"path"[39m[33m;[39m
+ [90m 3 |[39m
+ [90m 4 |[39m [36mexport[39m type [33mLogLevel[39m [33m=[39m [32m"DEBUG"[39m [33m|[39m [32m"INFO"[39m [33m|[39m [32m"WARN"[39m [33m|[39m [32m"ERROR"[39m[33m;[39m[0m
+
+A Node.js module is loaded ('fs' at line 1) which is not supported in the Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+
+Import traces:
+  App Route:
+    ./src/lib/debugLogger.ts
+    ./src/app/api/login/route.ts
+
+  Edge Instrumentation:
+    ./src/lib/debugLogger.ts
+    ./src/instrumentation.ts
+
+  Instrumentation:
+    ./src/lib/debugLogger.ts
+    ./src/instrumentation.ts
+
+
+./src/lib/debugLogger.ts:2:1
+Ecmascript file had an error
+[0m [90m 1 |[39m [36mimport[39m fs [36mfrom[39m [32m"fs"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m path [36mfrom[39m [32m"path"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 3 |[39m
+ [90m 4 |[39m [36mexport[39m type [33mLogLevel[39m [33m=[39m [32m"DEBUG"[39m [33m|[39m [32m"INFO"[39m [33m|[39m [32m"WARN"[39m [33m|[39m [32m"ERROR"[39m[33m;[39m
+ [90m 5 |[39m[0m
+
+A Node.js module is loaded ('path' at line 2) which is not supported in the Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+
+Import traces:
+  App Route:
+    ./src/lib/debugLogger.ts
+    ./src/app/api/login/route.ts
+
+  Edge Instrumentation:
+    ./src/lib/debugLogger.ts
+    ./src/instrumentation.ts
+
+  Instrumentation:
+    ./src/lib/debugLogger.ts
+    ./src/instrumentation.ts
+
+
+ ✓ Compiled successfully in 10.2s
+   Running TypeScript ...
+
+   We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+   	- include was updated to add '.next/types/**/*.ts'
+   	- include was updated to add '.next/dev/types/**/*.ts'
+   	- plugins was updated to add { name: 'next' }
+
+   The following mandatory changes were made to your tsconfig.json:
+
+   	- jsx was set to react-jsx (next.js uses the React automatic runtime)
+
+   Collecting page data using 9 workers ...
+   Generating static pages using 9 workers (0/6) ...
+   Generating static pages using 9 workers (1/6) 
+   Generating static pages using 9 workers (2/6) 
+   Generating static pages using 9 workers (4/6) 
+ ✓ Generating static pages using 9 workers (6/6) in 628.0ms
+   Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/login
+└ ○ /dashboard
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+[Step-2][2025-12-06T20:56:00+0000] Guardar metadados do build em /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/.next
+[Step-2][2025-12-06T20:56:00+0000] Build concluído. Artefactos em /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/.next

@@ -1,0 +1,18 @@
+[Step-1][2025-12-06T13:33:54+0000] Sincronizar a branch local 'my-rustdesk-mesh-integration' com origin/main (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-1-download-from-main-20251206-133354.log)
+[update_from_github][2025-12-06T13:33:54+0000] Repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
+[update_from_github][2025-12-06T13:33:54+0000] Sincronizar 'my-rustdesk-mesh-integration' a partir de 'origin/main'
+[update_from_github][2025-12-06T13:33:54+0000] git fetch --prune origin
+From https://github.com/storesace-cv/rustdesk-mesh-integration
+ * [new branch]      codex/fix-cors-issue-for-login -> origin/codex/fix-cors-issue-for-login
+   b16bde2..c17ad2d  main       -> origin/main
+[update_from_github][2025-12-06T13:33:55+0000] Checkout para my-rustdesk-mesh-integration
+Already on 'my-rustdesk-mesh-integration'
+M	package-lock.json
+M	package.json
+Your branch is ahead of 'origin/my-rustdesk-mesh-integration' by 26 commits.
+  (use "git push" to publish your local commits)
+[update_from_github][2025-12-06T13:33:55+0000] Reset hard para origin/main
+HEAD is now at c17ad2d Merge pull request #39 from storesace-cv/codex/fix-cors-issue-for-login
+[update_from_github][2025-12-06T13:33:55+0000] Limpar ficheiros não rastreados (git clean -fd)
+[update_from_github][2025-12-06T13:33:55+0000] Branch 'my-rustdesk-mesh-integration' agora espelha origin/main.
+[Step-1][2025-12-06T13:33:55+0000] Repositório actualizado a partir de origin/main para 'my-rustdesk-mesh-integration'

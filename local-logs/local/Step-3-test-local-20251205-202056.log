@@ -1,0 +1,23 @@
+[Step-3][2025-12-05T20:20:56+0000] Iniciar testes e lint (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-3-test-local-20251205-202056.log)
+[Step-3][2025-12-05T20:20:56+0000] npm run lint
+
+> rustdesk-mesh-integration@0.1.0 lint
+> eslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.1
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'eslint-config-next' imported from /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/eslint.config.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:255:9)
+    at packageResolve (node:internal/modules/esm/resolve:767:81)
+    at moduleResolve (node:internal/modules/esm/resolve:853:18)
+    at defaultResolve (node:internal/modules/esm/resolve:983:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)
+    at #link (node:internal/modules/esm/module_job:208:49)
+[Step-3][2025-12-05T20:20:57+0000] ERRO ao executar: npm run lint (exit code: 2)
+[Step-3][2025-12-05T20:20:57+0000] Verifica se já correste 'npm install' na raiz do projecto.
