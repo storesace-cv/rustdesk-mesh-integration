@@ -38,23 +38,28 @@ REMOTE="${DROPLET_SSH_USER}@${DROPLET_SSH_HOST}:${DROPLET_DEBUG_LOG_PATH}"
 STEP4_PATTERN="$ROOT_DIR/logs/archive/local-logs-*.tar.gz"
 STEP4_TARGET=""
 TARGET_DIR="$ROOT_DIR/local-logs"
-PUBLISH=${PUBLISH:-0}
+PUBLISH=${PUBLISH:-1}
 COMMIT_MESSAGE=${PUBLISH_COMMIT_MESSAGE:-"chore: publish logs"}
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/get-error-log.sh [--publish]
+Usage: scripts/get-error-log.sh [--no-publish]
 
-Downloads the droplet debug log into ./logs/droplet. Use --publish (or PUBLISH=1)
-to also mirror ./logs into ./local-logs/, force-stage the result, commit, and push
-to the current branch.
+Downloads the droplet debug log into ./logs/droplet and mirrors ./logs into
+./local-logs/, force-staging the result, committing, and pushing to the current
+branch. Use --no-publish (or PUBLISH=0) only when you explicitly want to skip
+the automatic publish step.
 USAGE
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --publish)
-      PUBLISH=1
+      echo "[get-error-log] --publish is now the default; you can omit it." >&2
+      shift
+      ;;
+    --no-publish)
+      PUBLISH=0
       shift
       ;;
     --help|-h)
@@ -145,7 +150,7 @@ if (( PUBLISH == 1 )); then
     exit 0
   fi
 
-  git commit -m "$COMMIT_MESSAGE" -- "$(realpath --relative-to="$(pwd)" "$TARGET_DIR")"
+  git commit -m "$COMMIT_MESSAGE" -- "$TARGET_DIR"
 
   current_branch=$(git rev-parse --abbrev-ref HEAD)
   if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
@@ -156,6 +161,6 @@ if (( PUBLISH == 1 )); then
 
   echo "[get-error-log] Published logs to GitHub on branch ${current_branch}."
 else
-  echo "[get-error-log] Logs stored locally under ./logs. Use --publish (or PUBLISH=1) to copy, commit, and push them automatically."
+  echo "[get-error-log] Publishing skipped (--no-publish/PUBLISH=0). Logs stored locally under ./logs."
 fi
 

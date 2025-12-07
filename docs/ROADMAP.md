@@ -75,7 +75,7 @@ O comportamento actual (observado pelos logs):
     defeito, com fallback para `logs/app-debug.log`).
   - O ficheiro é truncado a cada arranque (via `instrumentation.ts`) e regista arranque + fluxo de login quando `APP_DEBUG_ENABLED=true`.
   - Rota `/api/login` passa a mediar o login para logar cada passo (sem expor passwords/tokens).
-  - `scripts/get-error-log.sh` coloca o `app-debug.log` em `logs/droplet/` e, com `--publish`/`PUBLISH=1`, replica `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático para partilha.
+  - `scripts/get-error-log.sh` coloca o `app-debug.log` em `logs/droplet/` e **publica automaticamente**: replica `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático para partilha (use `--no-publish`/`PUBLISH=0` apenas se quiser evitar o envio).
   - Pastas de logs antigas como `local-logslocal/` foram removidas; `logs/` é só local e `local-logs/` apenas para publicação.
 
 ---
