@@ -34,6 +34,18 @@ if [[ -d "$ROOT_DIR/node_modules" ]]; then
   fi
 fi
 
+if [[ -d "$ROOT_DIR/.next" ]]; then
+  log "Detectada pasta .next existente – limpeza preventiva antes do build"
+  chmod -R u+w "$ROOT_DIR/.next" || log "Aviso: não foi possível ajustar permissões de .next"
+  if rm -rf "$ROOT_DIR/.next"; then
+    log ".next removido com sucesso"
+  else
+    TRASH_NEXT="$ROOT_DIR/.next_trash_$TIMESTAMP"
+    log "Aviso: rm -rf de .next falhou (ver logs). A mover .next para $TRASH_NEXT"
+    mv "$ROOT_DIR/.next" "$TRASH_NEXT"
+  fi
+fi
+
 log "npm ci --prefer-offline --no-audit --no-fund"
 npm ci --prefer-offline --no-audit --no-fund
 
