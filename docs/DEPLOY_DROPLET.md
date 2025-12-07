@@ -17,7 +17,7 @@ Os passos seguintes são executados sempre via scripts com prefixo `Step-*`:
 
 1. **Step-1 – sincronizar com `origin/main`**
    - `scripts/Step-1-download-from-main.sh`
-   - Garante que a branch local `my-rustdesk-mesh-integration` espelha `origin/main`.
+   - Garante que a branch local `my-rustdesk-mesh-integration` espelha `origin/main` e **aborta** se detectar merges/rebases em curso ou ficheiros em conflito; resolve primeiro (`git merge --abort` / `git rebase --abort` / limpar conflitos) antes de repetir o passo.
 2. **Step-2 – build local**
    - `scripts/Step-2-build-local.sh`
    - Corre `npm ci` + `npm run build` no portátil para gerar `.next` e `node_modules` já validados.
