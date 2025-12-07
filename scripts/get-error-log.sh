@@ -35,8 +35,8 @@ RUN_ID=""
 LOCAL_FILE=""
 LATEST_LINK=""
 REMOTE="${DROPLET_SSH_USER}@${DROPLET_SSH_HOST}:${DROPLET_DEBUG_LOG_PATH}"
-STEP4_PATTERN="$ROOT_DIR/logs/archive/local-logs-*.tar.gz"
-STEP4_TARGET=""
+STEP5_PATTERN="$ROOT_DIR/logs/archive/run-*-logs-*.tar.gz"
+STEP5_TARGET=""
 TARGET_DIR="$ROOT_DIR/local-logs"
 PUBLISH=${PUBLISH:-1}
 COMMIT_MESSAGE=${PUBLISH_COMMIT_MESSAGE:-"chore: publish logs"}
@@ -101,20 +101,20 @@ else
 fi
 
 shopt -s nullglob
-step4_candidates=($STEP4_PATTERN)
+step5_candidates=($STEP5_PATTERN)
 shopt -u nullglob
 
-if (( ${#step4_candidates[@]} > 0 )); then
-  step4_latest=$(ls -t "${step4_candidates[@]}" | head -n 1)
-  step4_basename="$(basename "$step4_latest")"
-  STEP4_TARGET="${LOCAL_DIR}/run-${RUN_ID}-${step4_basename}"
-  STEP4_LATEST_LINK="${LOCAL_DIR}/latest-local-logs.tar.gz"
-  cp "$step4_latest" "$STEP4_TARGET"
-  ln -sfn "$(basename "$STEP4_TARGET")" "$STEP4_LATEST_LINK"
-  echo "[get-error-log] Found Step-4 archive: ${step4_latest}. Copied to ${STEP4_TARGET}." \
-       "Latest pointer updated: $STEP4_LATEST_LINK -> $(basename "$STEP4_TARGET")"
+if (( ${#step5_candidates[@]} > 0 )); then
+  step5_latest=$(ls -t "${step5_candidates[@]}" | head -n 1)
+  step5_basename="$(basename "$step5_latest")"
+  STEP5_TARGET="${LOCAL_DIR}/run-${RUN_ID}-${step5_basename}"
+  STEP5_LATEST_LINK="${LOCAL_DIR}/latest-step5-logs.tar.gz"
+  cp "$step5_latest" "$STEP5_TARGET"
+  ln -sfn "$(basename "$STEP5_TARGET")" "$STEP5_LATEST_LINK"
+  echo "[get-error-log] Found Step-5 archive: ${step5_latest}. Copied to ${STEP5_TARGET}." \
+       "Latest pointer updated: $STEP5_LATEST_LINK -> $(basename "$STEP5_TARGET")"
 else
-  echo "[get-error-log] Warning: No Step-4 archive found. Skipping."
+  echo "[get-error-log] Warning: No Step-5 archive found. Skipping."
 fi
 
 if (( PUBLISH == 1 )); then

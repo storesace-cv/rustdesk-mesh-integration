@@ -65,11 +65,12 @@ O comportamento actual (observado pelos logs):
 
 ### 1.4 DevOps / Deploy
 
-- `scripts/Step-5-deploy-tested-build.sh`:
+- `scripts/Step-4-deploy-tested-build.sh`:
   - Reinicia o serviço e aguarda o frontend ficar disponível com `curl` (até 10 tentativas) antes de considerar o deploy concluído,
     para evitar falsos negativos quando o Next.js demora a levantar.
   - Heredoc remoto está agora protegido contra expansão local (`<<'EOF'`), evitando erros `unbound variable` quando o script corre com
     `set -u`.
+  - O alias antigo `Step-4-collect-error-logs.sh` foi removido para manter a numeração única; actualiza qualquer pipeline/merge para invocar directamente o `Step-5-collect-error-logs.sh`.
 - Sistema de debug centralizado:
   - Variáveis `APP_DEBUG_ENABLED` e `APP_DEBUG_LOG_PATH` controlam um ficheiro único (`/var/log/rustdesk-mesh/app-debug.log` por
     defeito, com fallback para `logs/app-debug.log`).
@@ -204,15 +205,16 @@ Estado em 2025-12-05: `start.sh` adicionado na raiz do repositório para servir 
 
 ### 3.3 Step-* pipeline (local)
 
-- [ ] Deploy canónico agora é **Step-* only** para evitar compilar no droplet:
-  1. `Step-1-download-from-main.sh` – branch local igual a `origin/main`.
-  2. `Step-2-build-local.sh` – build e `node_modules` gerados localmente.
-  3. `Step-3-test-local.sh` – lint + testes antes de qualquer envio (usa `eslint .` directo para evitar erros de resolução de directório na CLI do Next.js).
-  4. `Step-4-collect-error-logs.sh` – empacota `logs/local/` se algo falhar.
-  5. `Step-5-deploy-tested-build.sh` – `rsync` do build já testado; **não** corre `npm run build` no droplet, apenas reinicia `rustdesk-frontend.service`.
-- [ ] `update_from_github.sh` mantém-se como fallback no droplet (com build remoto) mas não é o caminho principal.
-- [ ] Logs locais em `logs/local/`, logs de deploy em `logs/deploy/`.
-- [x] Ficheiros desactualizados removidos de `scripts/` para reduzir confusão (`run-deploy-and-collect.sh`).
+  - [ ] Deploy canónico agora é **Step-* only** para evitar compilar no droplet:
+    1. `Step-1-download-from-main.sh` – branch local igual a `origin/main`.
+    2. `Step-2-build-local.sh` – build e `node_modules` gerados localmente.
+    3. `Step-3-test-local.sh` – lint + testes antes de qualquer envio (usa `eslint .` directo para evitar erros de resolução de directório na CLI do Next.js).
+    4. `Step-4-deploy-tested-build.sh` – `rsync` do build já testado; **não** corre `npm run build` no droplet, apenas reinicia `rustdesk-frontend.service`.
+    5. `Step-5-collect-error-logs.sh` – empacota `logs/local/` e `logs/deploy/` sempre que algum passo falha (incluindo erros de deploy do Step-4) para facilitar partilha.
+    - O alias `Step-4-collect-error-logs.sh` foi removido para evitar passos com o mesmo número; ajusta quaisquer scripts ou merges legados para usarem directamente o Step-5.
+  - [ ] `update_from_github.sh` mantém-se como fallback no droplet (com build remoto) mas não é o caminho principal.
+  - [ ] Logs locais em `logs/local/`, logs de deploy em `logs/deploy/`.
+  - [x] Ficheiros desactualizados removidos de `scripts/` para reduzir confusão (`run-deploy-and-collect.sh`).
 
 ### 3.4 Registo de logs
 
