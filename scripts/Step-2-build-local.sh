@@ -22,6 +22,34 @@ if [[ "$CURRENT_BRANCH" != "$BRANCH" ]]; then
 fi
 
 log "Iniciar build local do frontend (logs: $LOG_FILE)"
+log "Limpar ficheiros .DS_Store residuais (metadados do macOS)"
+if ! find "$ROOT_DIR" -name '.DS_Store' -print -delete; then
+  log "Aviso: falha ao remover alguns .DS_Store (ver logs para detalhes)"
+fi
+if [[ -d "$ROOT_DIR/node_modules" ]]; then
+  log "Detectada pasta node_modules existente – forçar limpeza segura antes do npm ci"
+  chmod -R u+w "$ROOT_DIR/node_modules" || log "Aviso: não foi possível ajustar permissões de node_modules"
+  if rm -rf "$ROOT_DIR/node_modules"; then
+    log "node_modules removido com sucesso"
+  else
+    TRASH_DIR="$ROOT_DIR/node_modules_trash_$TIMESTAMP"
+    log "Aviso: rm -rf falhou (ver logs). A mover node_modules para $TRASH_DIR"
+    mv "$ROOT_DIR/node_modules" "$TRASH_DIR"
+  fi
+fi
+
+if [[ -d "$ROOT_DIR/.next" ]]; then
+  log "Detectada pasta .next existente – limpeza preventiva antes do build"
+  chmod -R u+w "$ROOT_DIR/.next" || log "Aviso: não foi possível ajustar permissões de .next"
+  if rm -rf "$ROOT_DIR/.next"; then
+    log ".next removido com sucesso"
+  else
+    TRASH_NEXT="$ROOT_DIR/.next_trash_$TIMESTAMP"
+    log "Aviso: rm -rf de .next falhou (ver logs). A mover .next para $TRASH_NEXT"
+    mv "$ROOT_DIR/.next" "$TRASH_NEXT"
+  fi
+fi
+
 log "npm ci --prefer-offline --no-audit --no-fund"
 npm ci --prefer-offline --no-audit --no-fund
 
