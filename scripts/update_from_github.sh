@@ -26,7 +26,8 @@ if [[ -f .git/MERGE_HEAD || -d .git/rebase-apply || -d .git/rebase-merge ]]; the
   exit 1
 fi
 
-if git ls-files -u --error-unmatch >/dev/null 2>&1; then
+conflicting_files=$(git ls-files -u)
+if [[ -n "$conflicting_files" ]]; then
   log "ERRO: há ficheiros em estado de conflito. Limpa-os ou faz reset manual antes de continuar."
   exit 1
 fi
