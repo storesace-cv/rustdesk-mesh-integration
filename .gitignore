@@ -41,5 +41,13 @@ yarn-error.log*
 next-env.d.ts
 
 # logs
-/logs/
-/local-logs/
+/logs/*
+!/logs/.gitkeep
+!/logs/README.md
+
+/local-logs/*
+!/local-logs/.gitkeep
+!/local-logs/README.md
+
+# legacy log folders
+/local-logslocal/

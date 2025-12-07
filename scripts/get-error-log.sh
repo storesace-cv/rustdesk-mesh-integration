@@ -28,17 +28,45 @@ USAGE
   exit 1
 fi
 
-LOCAL_DIR="local-logs/droplet"
+LOCAL_DIR="$ROOT_DIR/logs/droplet"
 LOCAL_FILE="${LOCAL_DIR}/app-debug.log"
 REMOTE="${DROPLET_SSH_USER}@${DROPLET_SSH_HOST}:${DROPLET_DEBUG_LOG_PATH}"
-STEP4_PATTERN="logs/local-logs-*.tar.gz"
+STEP4_PATTERN="$ROOT_DIR/logs/local-logs-*.tar.gz"
 STEP4_TARGET=""
+PUBLISH=${PUBLISH:-0}
+
+usage() {
+  cat <<'USAGE'
+Usage: scripts/get-error-log.sh [--publish]
+
+Downloads the droplet debug log into ./logs/droplet. Use --publish (or PUBLISH=1)
+to mirror current ./logs content into ./local-logs/ for GitHub sharing.
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --publish)
+      PUBLISH=1
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "[get-error-log] Unknown argument: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
 
 mkdir -p "$LOCAL_DIR"
 
 echo "[get-error-log] Copying ${REMOTE} -> ${LOCAL_FILE}"
 if scp "$REMOTE" "$LOCAL_FILE"; then
-  echo "[get-error-log] Log retrieved successfully."
+  echo "[get-error-log] Log retrieved successfully into $LOCAL_DIR."
 else
   echo "[get-error-log] Failed to retrieve log from droplet." >&2
   exit 1
@@ -58,33 +86,11 @@ else
   echo "[get-error-log] Warning: No Step-4 archive found. Skipping."
 fi
 
-git add -f "$LOCAL_FILE"
-if [[ -n "$STEP4_TARGET" ]]; then
-  git add -f "$STEP4_TARGET"
-  echo "[get-error-log] Adding Step-4 archive to commit."
-fi
-
-if git diff --cached --quiet; then
-  echo "[get-error-log] No changes to commit."
+if (( PUBLISH == 1 )); then
+  echo "[get-error-log] Publishing ./logs to ./local-logs (staged)"
+  PUBLISH_ARGS=("--stage")
+  "$ROOT_DIR/scripts/publish-logs-to-github.sh" "${PUBLISH_ARGS[@]}"
 else
-  COMMIT_MSG="chore: update droplet debug logs"
-  echo "[get-error-log] Committing logs with message: ${COMMIT_MSG}"
-  git commit -m "$COMMIT_MSG"
-
-  echo "[get-error-log] Checking remote state before pushing"
-  git fetch origin main >/dev/null
-  ahead_behind=( $(git rev-list --left-right --count HEAD...origin/main) )
-  behind=${ahead_behind[1]:-0}
-
-  if (( behind > 0 )); then
-    echo "[get-error-log] Local branch is behind origin/main."
-    echo "[get-error-log] Skipping auto-push. Please run: git pull --rebase origin main && git push origin main"
-  else
-    echo "[get-error-log] Pushing to origin main"
-    if git push origin main; then
-      echo "[get-error-log] Push completed successfully."
-    else
-      echo "[get-error-log] Push failed. Please resolve the issue (e.g., pull/rebase) and push manually." >&2
-    fi
-  fi
+  echo "[get-error-log] Logs stored locally under ./logs. Run scripts/publish-logs-to-github.sh if you need to share them."
 fi
+
