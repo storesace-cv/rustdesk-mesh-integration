@@ -1,0 +1,40 @@
+[Step-1][2025-12-07T02:40:03+0000] Sincronizar a branch local 'my-rustdesk-mesh-integration' com origin/main (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-1-download-from-main-20251207-024003.log)
+[update_from_github][2025-12-07T02:40:03+0000] Repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
+[update_from_github][2025-12-07T02:40:03+0000] Sincronizar 'my-rustdesk-mesh-integration' a partir de 'origin/main'
+[update_from_github][2025-12-07T02:40:03+0000] git fetch --prune origin
+From https://github.com/storesace-cv/rustdesk-mesh-integration
+ * [new branch]      codex/modify-get-error-log.sh-for-github-upload -> origin/codex/modify-get-error-log.sh-for-github-upload
+ * [new branch]      codex/remove-all-but-last-local-logs -> origin/codex/remove-all-but-last-local-logs
+   b8ba596..acacb57  main       -> origin/main
+[update_from_github][2025-12-07T02:40:04+0000] Checkout para my-rustdesk-mesh-integration
+Already on 'my-rustdesk-mesh-integration'
+A	local-logs/.log-sequence
+A	local-logs/archive/local-logs-latest.tar.gz
+A	local-logs/archive/run-0001-local-logs-20251207-022040.tar.gz
+D	local-logs/deploy/.DS_Store
+A	local-logs/deploy/Step-5-deploy-tested-build-20251207-022145.log
+D	local-logs/droplet/.DS_Store
+A	local-logs/droplet/latest-app-debug.log
+A	local-logs/droplet/latest-local-logs.tar.gz
+A	local-logs/droplet/run-0002-app-debug.log
+A	local-logs/droplet/run-0002-local-logs-latest.tar.gz
+A	local-logs/droplet/run-0003-app-debug.log
+A	local-logs/droplet/run-0003-local-logs-latest.tar.gz
+A	local-logs/local/Step-1-download-from-main-20251207-012509.log
+A	local-logs/local/Step-1-download-from-main-20251207-014753.log
+A	local-logs/local/Step-1-download-from-main-20251207-020923.log
+A	local-logs/local/Step-1-download-from-main-20251207-021929.log
+A	local-logs/local/Step-2-build-local-20251207-012518.log
+A	local-logs/local/Step-2-build-local-20251207-015833.log
+A	local-logs/local/Step-2-build-local-20251207-020934.log
+A	local-logs/local/Step-2-build-local-20251207-021935.log
+A	local-logs/local/Step-3-test-local-20251207-022019.log
+D	local-logs/supabase/.DS_Store
+M	tsconfig.json
+Your branch is ahead of 'origin/my-rustdesk-mesh-integration' by 18 commits.
+  (use "git push" to publish your local commits)
+[update_from_github][2025-12-07T02:40:04+0000] Reset hard para origin/main
+HEAD is now at acacb57 Merge pull request #60 from storesace-cv/codex/modify-get-error-log.sh-for-github-upload
+[update_from_github][2025-12-07T02:40:04+0000] Limpar ficheiros não rastreados (git clean -fd)
+[update_from_github][2025-12-07T02:40:04+0000] Branch 'my-rustdesk-mesh-integration' agora espelha origin/main.
+[Step-1][2025-12-07T02:40:04+0000] Repositório actualizado a partir de origin/main para 'my-rustdesk-mesh-integration'

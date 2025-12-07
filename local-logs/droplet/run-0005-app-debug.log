@@ -1,0 +1,2 @@
+[2025-12-07T03:23:42.958Z] [INFO] [startup] Debug logger initialized {"logPath":"/var/log/rustdesk-mesh/app-debug.log","debugEnabled":false}
+[2025-12-07T03:23:42.959Z] [INFO] [startup] APP_DEBUG_ENABLED is false — debug log will remain minimal.

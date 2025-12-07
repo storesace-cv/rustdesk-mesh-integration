@@ -1,0 +1,55 @@
+[Step-2][2025-12-07T02:19:35+0000] Iniciar build local do frontend (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-2-build-local-20251207-021935.log)
+[Step-2][2025-12-07T02:19:35+0000] Limpar ficheiros .DS_Store residuais (metadados do macOS)
+/Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/local-logs/droplet/.DS_Store
+/Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/local-logs/deploy/.DS_Store
+/Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/local-logs/supabase/.DS_Store
+[Step-2][2025-12-07T02:19:35+0000] Detectada pasta node_modules existente – forçar limpeza segura antes do npm ci
+[Step-2][2025-12-07T02:19:38+0000] node_modules removido com sucesso
+[Step-2][2025-12-07T02:19:38+0000] Detectada pasta .next existente – limpeza preventiva antes do build
+[Step-2][2025-12-07T02:19:38+0000] .next removido com sucesso
+[Step-2][2025-12-07T02:19:38+0000] npm ci --prefer-offline --no-audit --no-fund
+
+added 499 packages in 6s
+[Step-2][2025-12-07T02:19:44+0000] npm run build
+
+> rustdesk-mesh-integration@0.1.0 build
+> next build
+
+   ▲ Next.js 16.0.6 (Turbopack)
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 9.8s
+   Running TypeScript ...
+
+   We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+   	- include was updated to add '.next/types/**/*.ts'
+   	- include was updated to add '.next/dev/types/**/*.ts'
+   	- plugins was updated to add { name: 'next' }
+
+   The following mandatory changes were made to your tsconfig.json:
+
+   	- jsx was set to react-jsx (next.js uses the React automatic runtime)
+
+   Collecting page data using 9 workers ...
+   Generating static pages using 9 workers (0/6) ...
+   Generating static pages using 9 workers (1/6) 
+   Generating static pages using 9 workers (2/6) 
+   Generating static pages using 9 workers (4/6) 
+ ✓ Generating static pages using 9 workers (6/6) in 543.0ms
+   Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/login
+└ ○ /dashboard
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+[Step-2][2025-12-07T02:20:08+0000] Guardar metadados do build em /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/.next
+[Step-2][2025-12-07T02:20:08+0000] Build concluído. Artefactos em /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/.next

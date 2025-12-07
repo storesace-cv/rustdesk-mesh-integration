@@ -1,0 +1,28 @@
+[Step-3][2025-12-07T04:13:24+0000] Iniciar testes e lint (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-3-test-local-20251207-041324.log)
+[Step-3][2025-12-07T04:13:24+0000] npm run lint
+
+> rustdesk-mesh-integration@0.1.0 lint
+> eslint .
+
+[Step-3][2025-12-07T04:13:27+0000] npm test
+
+> rustdesk-mesh-integration@0.1.0 test
+> tsx tests/grouping.test.ts
+
+▶ parseNotesToGrouping
+  ✔ routes empty and null notes to Dispositivos por Adotar (0.572709ms)
+  ✔ extracts group and subgroup when present (0.441042ms)
+✔ parseNotesToGrouping (2.003959ms)
+▶ groupDevices
+  ✔ places devices with missing notes into Dispositivos por Adotar (0.196542ms)
+  ✔ uses backend-provided grouping when available (0.0835ms)
+✔ groupDevices (0.381541ms)
+ℹ tests 4
+ℹ suites 2
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12.068
+[Step-3][2025-12-07T04:13:28+0000] Testes locais concluídos com sucesso

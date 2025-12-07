@@ -1,0 +1,17 @@
+[Step-1][2025-12-07T02:09:23+0000] Sincronizar a branch local 'my-rustdesk-mesh-integration' com origin/main (logs: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/local/Step-1-download-from-main-20251207-020923.log)
+[update_from_github][2025-12-07T02:09:23+0000] Repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
+[update_from_github][2025-12-07T02:09:23+0000] Sincronizar 'my-rustdesk-mesh-integration' a partir de 'origin/main'
+[update_from_github][2025-12-07T02:09:23+0000] git fetch --prune origin
+From https://github.com/storesace-cv/rustdesk-mesh-integration
+ * [new branch]      codex/fix-step-2-build-local.sh-script-inconsistencies-fqvrxa -> origin/codex/fix-step-2-build-local.sh-script-inconsistencies-fqvrxa
+ * [new branch]      codex/fix-step-2-build-local.sh-script-inconsistencies-uk9yd8 -> origin/codex/fix-step-2-build-local.sh-script-inconsistencies-uk9yd8
+   4bf7fc6..139893e  main       -> origin/main
+[update_from_github][2025-12-07T02:09:24+0000] Checkout para my-rustdesk-mesh-integration
+Already on 'my-rustdesk-mesh-integration'
+Your branch is ahead of 'origin/my-rustdesk-mesh-integration' by 10 commits.
+  (use "git push" to publish your local commits)
+[update_from_github][2025-12-07T02:09:24+0000] Reset hard para origin/main
+HEAD is now at 139893e Merge pull request #57 from storesace-cv/codex/fix-step-2-build-local.sh-script-inconsistencies-uk9yd8
+[update_from_github][2025-12-07T02:09:24+0000] Limpar ficheiros não rastreados (git clean -fd)
+[update_from_github][2025-12-07T02:09:24+0000] Branch 'my-rustdesk-mesh-integration' agora espelha origin/main.
+[Step-1][2025-12-07T02:09:24+0000] Repositório actualizado a partir de origin/main para 'my-rustdesk-mesh-integration'
