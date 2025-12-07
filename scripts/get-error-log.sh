@@ -118,6 +118,11 @@ else
 fi
 
 if (( PUBLISH == 1 )); then
+  if ! git symbolic-ref -q HEAD >/dev/null; then
+    echo "[get-error-log] Cannot publish logs while on a detached HEAD. Checkout a branch and rerun." >&2
+    exit 1
+  fi
+
   shopt -s nullglob dotglob
   log_entries=()
   for entry in "$LOGS_DIR"/*; do
