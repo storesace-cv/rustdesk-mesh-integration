@@ -28,19 +28,23 @@ USAGE
   exit 1
 fi
 
-LOCAL_DIR="$ROOT_DIR/logs/droplet"
+LOGS_DIR="$ROOT_DIR/logs"
+LOCAL_DIR="$LOGS_DIR/droplet"
 LOCAL_FILE="${LOCAL_DIR}/app-debug.log"
 REMOTE="${DROPLET_SSH_USER}@${DROPLET_SSH_HOST}:${DROPLET_DEBUG_LOG_PATH}"
 STEP4_PATTERN="$ROOT_DIR/logs/local-logs-*.tar.gz"
 STEP4_TARGET=""
+TARGET_DIR="$ROOT_DIR/local-logs"
 PUBLISH=${PUBLISH:-0}
+COMMIT_MESSAGE=${PUBLISH_COMMIT_MESSAGE:-"chore: publish logs"}
 
 usage() {
   cat <<'USAGE'
 Usage: scripts/get-error-log.sh [--publish]
 
 Downloads the droplet debug log into ./logs/droplet. Use --publish (or PUBLISH=1)
-to mirror current ./logs content into ./local-logs/ for GitHub sharing.
+to also mirror ./logs into ./local-logs/, force-stage the result, commit, and push
+to the current branch.
 USAGE
 }
 
@@ -87,10 +91,49 @@ else
 fi
 
 if (( PUBLISH == 1 )); then
-  echo "[get-error-log] Publishing ./logs to ./local-logs (staged)"
-  PUBLISH_ARGS=("--stage")
-  "$ROOT_DIR/scripts/publish-logs-to-github.sh" "${PUBLISH_ARGS[@]}"
+  shopt -s nullglob dotglob
+  log_entries=()
+  for entry in "$LOGS_DIR"/*; do
+    base=$(basename "$entry")
+    if [[ "$base" == "README.md" || "$base" == ".gitkeep" ]]; then
+      continue
+    fi
+    log_entries+=("$entry")
+  done
+  shopt -u nullglob dotglob
+
+  if (( ${#log_entries[@]} == 0 )); then
+    echo "[get-error-log] No log files found under $LOGS_DIR (excluding README.md/.gitkeep). Nothing to publish." >&2
+    exit 0
+  fi
+
+  mkdir -p "$TARGET_DIR"
+
+  rsync -av --delete \
+    --exclude 'README.md' \
+    --exclude '.gitkeep' \
+    "$LOGS_DIR/" "$TARGET_DIR/"
+
+  echo "[get-error-log] Logs copied from $LOGS_DIR to $TARGET_DIR."
+
+  git add -f "$TARGET_DIR"
+
+  if git diff --cached --quiet -- "$TARGET_DIR"; then
+    echo "[get-error-log] No new log changes to commit. Skipping push."
+    exit 0
+  fi
+
+  git commit -m "$COMMIT_MESSAGE" -- "$(realpath --relative-to="$(pwd)" "$TARGET_DIR")"
+
+  current_branch=$(git rev-parse --abbrev-ref HEAD)
+  if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
+    git push
+  else
+    git push -u origin "$current_branch"
+  fi
+
+  echo "[get-error-log] Published logs to GitHub on branch ${current_branch}."
 else
-  echo "[get-error-log] Logs stored locally under ./logs. Run scripts/publish-logs-to-github.sh if you need to share them."
+  echo "[get-error-log] Logs stored locally under ./logs. Use --publish (or PUBLISH=1) to copy, commit, and push them automatically."
 fi
 
