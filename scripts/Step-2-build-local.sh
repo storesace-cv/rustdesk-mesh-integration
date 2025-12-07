@@ -22,6 +22,18 @@ if [[ "$CURRENT_BRANCH" != "$BRANCH" ]]; then
 fi
 
 log "Iniciar build local do frontend (logs: $LOG_FILE)"
+if [[ -d "$ROOT_DIR/node_modules" ]]; then
+  log "Detectada pasta node_modules existente – forçar limpeza segura antes do npm ci"
+  chmod -R u+w "$ROOT_DIR/node_modules" || log "Aviso: não foi possível ajustar permissões de node_modules"
+  if rm -rf "$ROOT_DIR/node_modules"; then
+    log "node_modules removido com sucesso"
+  else
+    TRASH_DIR="$ROOT_DIR/node_modules_trash_$TIMESTAMP"
+    log "Aviso: rm -rf falhou (ver logs). A mover node_modules para $TRASH_DIR"
+    mv "$ROOT_DIR/node_modules" "$TRASH_DIR"
+  fi
+fi
+
 log "npm ci --prefer-offline --no-audit --no-fund"
 npm ci --prefer-offline --no-audit --no-fund
 
