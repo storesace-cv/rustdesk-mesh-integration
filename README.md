@@ -18,14 +18,14 @@ para que o Codex / Softgen consiga continuar o desenvolvimento.
   - `register-device`
   - `remove-device`
 - `scripts/` – Scripts auxiliares (fluxo Step-* obrigatório):
-  - `Step-1-download-from-main.sh` – obtém `origin/main` e sincroniza a branch de testes local.
+  - `Step-1-download-from-main.sh` – obtém `origin/main` e sincroniza a branch de testes local; falha de forma amigável se existirem merges/rebases pendentes, ficheiros em conflito **ou ficheiros não rastreados/alterações locais** (a menos que exportes `ALLOW_DIRTY_RESET=1`), para que resolves antes de descarregar.
   - `Step-2-build-local.sh` – instala dependências e gera o build local.
   - `Step-3-test-local.sh` – corre lint + testes no portátil.
   - `Step-4-deploy-tested-build.sh` – envia o build já testado para o droplet e reinicia o serviço sem recompilar.
   - `Step-5-collect-error-logs.sh` – junta logs de `logs/local/` e `logs/deploy/` após qualquer falha (incluindo no Step-4),
     gera um bundle numerado e actualiza o symlink `logs-latest.tar.gz`.
   - O nome antigo `Step-4-collect-error-logs.sh` foi descontinuado para manter a numeração única: actualiza pipelines/scripts para chamarem o `Step-5-collect-error-logs.sh` directamente.
-  - `get-error-log.sh` – numera cada recolha, guarda o ficheiro em `logs/droplet/run-<id>-app-debug.log`, actualiza o symlink `latest-app-debug.log` e **publica sempre**: copia `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático (use `--no-publish`/`PUBLISH=0` apenas se quiser evitar este passo). Se a branch local estiver atrás do remoto, faz automaticamente `git pull --rebase --autostash` antes de voltar a tentar o push.
+  - `get-error-log.sh` – numera cada recolha, guarda o ficheiro em `logs/droplet/run-<id>-app-debug.log`, actualiza o symlink `latest-app-debug.log` e **publica sempre**: copia `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático (use `--no-publish`/`PUBLISH=0` apenas se quiser evitar este passo). Se a branch local estiver atrás do remoto, faz automaticamente `git pull --rebase --autostash` antes de voltar a tentar o push. Recusa-se a publicar se estiveres em detached HEAD (ex.: após checkout de um commit solto) para evitar commits órfãos.
   - `sync-devices.sh` – ler devices.json do MeshCentral e enviar para Supabase.
   - `update_from_github.sh` – sincronização rápida no próprio droplet (fallback).
   - `update_supabase.sh` – operações da Supabase CLI.
