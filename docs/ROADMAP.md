@@ -77,6 +77,7 @@ O comportamento actual (observado pelos logs):
   - O ficheiro é truncado a cada arranque (via `instrumentation.ts`) e regista arranque + fluxo de login quando `APP_DEBUG_ENABLED=true`.
   - Rota `/api/login` passa a mediar o login para logar cada passo (sem expor passwords/tokens).
   - `scripts/get-error-log.sh` coloca o `app-debug.log` em `logs/droplet/` e **publica automaticamente**: replica `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático para partilha (use `--no-publish`/`PUBLISH=0` apenas se quiser evitar o envio).
+  - Protecção extra: se o repositório estiver em detached HEAD, o script aborta a publicação para evitar commits órfãos e falhas de `git push`.
   - Pastas de logs antigas como `local-logslocal/` foram removidas; `logs/` é só local e `local-logs/` apenas para publicação.
 
 ---
@@ -206,7 +207,7 @@ Estado em 2025-12-05: `start.sh` adicionado na raiz do repositório para servir 
 ### 3.3 Step-* pipeline (local)
 
   - [ ] Deploy canónico agora é **Step-* only** para evitar compilar no droplet:
-    1. `Step-1-download-from-main.sh` – branch local igual a `origin/main`.
+    1. `Step-1-download-from-main.sh` – branch local igual a `origin/main`; aborta se detectar merges/rebases pendentes ou ficheiros em conflito para evitar resets perigosos.
     2. `Step-2-build-local.sh` – build e `node_modules` gerados localmente.
     3. `Step-3-test-local.sh` – lint + testes antes de qualquer envio (usa `eslint .` directo para evitar erros de resolução de directório na CLI do Next.js).
     4. `Step-4-deploy-tested-build.sh` – `rsync` do build já testado; **não** corre `npm run build` no droplet, apenas reinicia `rustdesk-frontend.service`.

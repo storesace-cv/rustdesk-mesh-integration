@@ -21,6 +21,16 @@ cd "$REPO_DIR"
 log "Repositório: $REPO_DIR"
 log "Sincronizar '$BRANCH_LOCAL' a partir de 'origin/$BRANCH_REMOTE'"
 
+if [[ -f .git/MERGE_HEAD || -d .git/rebase-apply || -d .git/rebase-merge ]]; then
+  log "ERRO: existe um merge/rebase em curso. Resolve-o (git merge --abort / git rebase --abort) antes de sincronizar."
+  exit 1
+fi
+
+if git ls-files -u --error-unmatch >/dev/null 2>&1; then
+  log "ERRO: há ficheiros em estado de conflito. Limpa-os ou faz reset manual antes de continuar."
+  exit 1
+fi
+
 if [[ "$ALLOW_DIRTY_RESET" != "1" ]]; then
   if ! git diff-index --quiet HEAD --; then
     log "ERRO: existem alterações não commitadas em ficheiros rastreados. Exporta ALLOW_DIRTY_RESET=1 para forçar reset hard."
