@@ -65,7 +65,7 @@ O comportamento actual (observado pelos logs):
 
 ### 1.4 DevOps / Deploy
 
-- `scripts/Step-5-deploy-tested-build.sh`:
+- `scripts/Step-4-deploy-tested-build.sh`:
   - Reinicia o serviço e aguarda o frontend ficar disponível com `curl` (até 10 tentativas) antes de considerar o deploy concluído,
     para evitar falsos negativos quando o Next.js demora a levantar.
   - Heredoc remoto está agora protegido contra expansão local (`<<'EOF'`), evitando erros `unbound variable` quando o script corre com
@@ -208,8 +208,8 @@ Estado em 2025-12-05: `start.sh` adicionado na raiz do repositório para servir 
   1. `Step-1-download-from-main.sh` – branch local igual a `origin/main`.
   2. `Step-2-build-local.sh` – build e `node_modules` gerados localmente.
   3. `Step-3-test-local.sh` – lint + testes antes de qualquer envio (usa `eslint .` directo para evitar erros de resolução de directório na CLI do Next.js).
-  4. `Step-4-collect-error-logs.sh` – empacota `logs/local/` se algo falhar.
-  5. `Step-5-deploy-tested-build.sh` – `rsync` do build já testado; **não** corre `npm run build` no droplet, apenas reinicia `rustdesk-frontend.service`.
+  4. `Step-4-deploy-tested-build.sh` – `rsync` do build já testado; **não** corre `npm run build` no droplet, apenas reinicia `rustdesk-frontend.service`.
+  5. `Step-5-collect-error-logs.sh` – empacota `logs/local/` e `logs/deploy/` sempre que algum passo falha (incluindo erros de deploy do Step-4) para facilitar partilha.
 - [ ] `update_from_github.sh` mantém-se como fallback no droplet (com build remoto) mas não é o caminho principal.
 - [ ] Logs locais em `logs/local/`, logs de deploy em `logs/deploy/`.
 - [x] Ficheiros desactualizados removidos de `scripts/` para reduzir confusão (`run-deploy-and-collect.sh`).
