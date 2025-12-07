@@ -70,6 +70,21 @@ else
   COMMIT_MSG="chore: update droplet debug logs"
   echo "[get-error-log] Committing logs with message: ${COMMIT_MSG}"
   git commit -m "$COMMIT_MSG"
-  echo "[get-error-log] Pushing to origin main"
-  git push origin main
+
+  echo "[get-error-log] Checking remote state before pushing"
+  git fetch origin main >/dev/null
+  ahead_behind=( $(git rev-list --left-right --count HEAD...origin/main) )
+  behind=${ahead_behind[1]:-0}
+
+  if (( behind > 0 )); then
+    echo "[get-error-log] Local branch is behind origin/main."
+    echo "[get-error-log] Skipping auto-push. Please run: git pull --rebase origin main && git push origin main"
+  else
+    echo "[get-error-log] Pushing to origin main"
+    if git push origin main; then
+      echo "[get-error-log] Push completed successfully."
+    else
+      echo "[get-error-log] Push failed. Please resolve the issue (e.g., pull/rebase) and push manually." >&2
+    fi
+  fi
 fi
