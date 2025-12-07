@@ -10,12 +10,62 @@ import {
   maskEmail,
   safeError,
 } from "@/lib/debugLogger";
+import { ProxyAgent } from "undici";
 
 export const runtime = "nodejs";
 
 interface LoginRequestBody {
   email?: string;
   password?: string;
+}
+
+function shouldBypassProxy(hostname: string) {
+  const entries =
+    process.env.NO_PROXY?.split(",") || process.env.no_proxy?.split(",") || [];
+  return entries
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .some((entry) => {
+      if (entry === "*") return true;
+      if (entry === hostname) return true;
+      if (entry.startsWith(".")) return hostname.endsWith(entry);
+      return false;
+    });
+}
+
+function createProxyAgent(targetUrl: string): {
+  proxyAgent?: ProxyAgent;
+  usingProxy: boolean;
+} {
+  const proxyUrl =
+    process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROXY || process.env.http_proxy;
+
+  if (!proxyUrl) return { proxyAgent: undefined, usingProxy: false };
+
+  let target: URL;
+  try {
+    target = new URL(targetUrl);
+  } catch (error) {
+    logWarn("login", "Invalid target URL when configuring proxy", {
+      targetUrl,
+      error: safeError(error),
+    });
+    return { proxyAgent: undefined, usingProxy: false };
+  }
+
+  if (shouldBypassProxy(target.hostname)) {
+    return { proxyAgent: undefined, usingProxy: false };
+  }
+
+  try {
+    return { proxyAgent: new ProxyAgent(proxyUrl), usingProxy: true };
+  } catch (error) {
+    logWarn("login", "Failed to configure proxy for Supabase call", {
+      proxyUrl,
+      error: safeError(error),
+    });
+    return { proxyAgent: undefined, usingProxy: false };
+  }
 }
 
 export async function POST(req: Request) {
@@ -69,10 +119,12 @@ export async function POST(req: Request) {
   }
 
   const targetUrl = `${supabaseUrl}/functions/v1/login`;
+  const { proxyAgent, usingProxy } = createProxyAgent(targetUrl);
   logDebug("login", "Calling Supabase login function", {
     requestId,
     targetUrl,
     emailMasked: maskEmail(email),
+    usingProxy,
   });
 
   const controller = new AbortController();
@@ -86,6 +138,7 @@ export async function POST(req: Request) {
         Authorization: `Bearer ${anonKey}`,
       },
       body: JSON.stringify({ email, password }),
+      dispatcher: proxyAgent,
       signal: controller.signal,
     });
 
