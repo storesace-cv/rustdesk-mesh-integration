@@ -217,6 +217,7 @@ Estado em 2025-12-05: `start.sh` adicionado na raiz do repositório para servir 
   - [ ] `update_from_github.sh` mantém-se como fallback no droplet (com build remoto) mas não é o caminho principal.
   - [ ] Logs locais em `logs/local/`, logs de deploy em `logs/deploy/`.
   - [x] Ficheiros desactualizados removidos de `scripts/` para reduzir confusão (`run-deploy-and-collect.sh`).
+  - [x] `ALLOW_DIRTY_RESET` controla se os checks de ficheiros em conflito/alterações locais são ignorados (`0` por omissão para ser seguro; `1` para forçar reset hard).
 
 ### 3.4 Registo de logs
 
