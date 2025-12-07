@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG_DIR="$ROOT_DIR/logs/deploy"
 TIMESTAMP="$(date +"%Y%m%d-%H%M%S")"
-LOG_FILE="$LOG_DIR/Step-5-deploy-tested-build-$TIMESTAMP.log"
+LOG_FILE="$LOG_DIR/Step-4-deploy-tested-build-$TIMESTAMP.log"
 BRANCH=${BRANCH:-"my-rustdesk-mesh-integration"}
 REMOTE_USER=${REMOTE_USER:-"root"}
 REMOTE_HOST=${REMOTE_HOST:-"142.93.106.94"}
@@ -15,7 +15,7 @@ mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 log() {
-  printf '[Step-5][%s] %s\n' "$(date +"%Y-%m-%dT%H:%M:%S%z")" "$*"
+  printf '[Step-4][%s] %s\n' "$(date +"%Y-%m-%dT%H:%M:%S%z")" "$*"
 }
 
 cd "$ROOT_DIR"

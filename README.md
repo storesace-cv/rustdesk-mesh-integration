@@ -21,9 +21,10 @@ para que o Codex / Softgen consiga continuar o desenvolvimento.
   - `Step-1-download-from-main.sh` – obtém `origin/main` e sincroniza a branch de testes local.
   - `Step-2-build-local.sh` – instala dependências e gera o build local.
   - `Step-3-test-local.sh` – corre lint + testes no portátil.
-  - `Step-5-deploy-tested-build.sh` – envia o build já testado para o droplet e reinicia o serviço sem recompilar.
-  - `Step-4-collect-error-logs.sh` – junta logs de `logs/local/` e `logs/deploy/` após qualquer falha (incluindo no Step-5),
+  - `Step-4-deploy-tested-build.sh` – envia o build já testado para o droplet e reinicia o serviço sem recompilar.
+  - `Step-5-collect-error-logs.sh` – junta logs de `logs/local/` e `logs/deploy/` após qualquer falha (incluindo no Step-4),
     gera um bundle numerado e actualiza o symlink `logs-latest.tar.gz`.
+  - Compat: `Step-4-collect-error-logs.sh` foi mantido como shim e redirecciona para o Step-5 (útil para fluxos antigos ou merges).
   - `get-error-log.sh` – numera cada recolha, guarda o ficheiro em `logs/droplet/run-<id>-app-debug.log`, actualiza o symlink `latest-app-debug.log` e **publica sempre**: copia `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático (use `--no-publish`/`PUBLISH=0` apenas se quiser evitar este passo).
   - `sync-devices.sh` – ler devices.json do MeshCentral e enviar para Supabase.
   - `update_from_github.sh` – sincronização rápida no próprio droplet (fallback).
@@ -46,7 +47,7 @@ Ver `docs/ROADMAP.md` para detalhes e tarefas abertas.
   - Guardar tudo o que é gerado no portátil ou descarregado do droplet (incluindo `logs/droplet`).
   - Ignorado pelo Git para impedir sincronização acidental. Estrutura principal:
     - `logs/droplet/run-<id>-app-debug.log` + symlink `latest-app-debug.log` para a recolha mais recente.
-    - `logs/archive/run-<id>-logs-<timestamp>.tar.gz` + symlink `logs-latest.tar.gz` para o último bundle do Step-4 (inclui
+    - `logs/archive/run-<id>-logs-<timestamp>.tar.gz` + symlink `logs-latest.tar.gz` para o último bundle do Step-5 (inclui
       logs locais e de deploy quando existirem).
 - `local-logs/` (apenas GitHub):
   - Recebe ficheiros copiados automaticamente via `scripts/get-error-log.sh` sempre que o script corre (a menos que use `--no-publish`).
