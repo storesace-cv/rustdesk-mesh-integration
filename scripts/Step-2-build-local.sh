@@ -22,6 +22,10 @@ if [[ "$CURRENT_BRANCH" != "$BRANCH" ]]; then
 fi
 
 log "Iniciar build local do frontend (logs: $LOG_FILE)"
+log "Limpar ficheiros .DS_Store residuais (metadados do macOS)"
+if ! find "$ROOT_DIR" -name '.DS_Store' -print -delete; then
+  log "Aviso: falha ao remover alguns .DS_Store (ver logs para detalhes)"
+fi
 if [[ -d "$ROOT_DIR/node_modules" ]]; then
   log "Detectada pasta node_modules existente – forçar limpeza segura antes do npm ci"
   chmod -R u+w "$ROOT_DIR/node_modules" || log "Aviso: não foi possível ajustar permissões de node_modules"
