@@ -1,8 +1,0 @@
-[update_to_droplet][2025-12-05T17:10:13+0000] Raiz do repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
-[update_to_droplet][2025-12-05T17:10:13+0000] Log local: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/deploy/deploy-20251205-171013.log
-[update_to_droplet][2025-12-05T17:10:13+0000] A carregar variáveis de ambiente de /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/.env.local
-[update_to_droplet][2025-12-05T17:10:13+0000] Executar scripts/update_supabase.sh
-[update_supabase][2025-12-05T17:10:13+0000] Raiz do repositório: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration
-[update_supabase][2025-12-05T17:10:13+0000] Log: /Users/jorgepeixinho/Documents/NetxCloud/projectos/bwb/desenvolvimento/rustdesk-mesh-integration/logs/supabase/supabase-update-20251205-171013.log
-[update_supabase][2025-12-05T17:10:13+0000] Versão Supabase CLI: 2.65.5
-[update_supabase][2025-12-05T17:10:13+0000] ERRO: Define SUPABASE_PROJECT_REF para identificar o projecto remoto.

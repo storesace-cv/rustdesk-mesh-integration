@@ -23,6 +23,7 @@ para que o Codex / Softgen consiga continuar o desenvolvimento.
   - `Step-3-test-local.sh` – corre lint + testes no portátil.
   - `Step-4-collect-error-logs.sh` – comprime os logs locais em caso de erro.
   - `Step-5-deploy-tested-build.sh` – envia o build já testado para o droplet e reinicia o serviço sem recompilar.
+  - `get-error-log.sh` – copia o log do droplet para `logs/droplet`; com `--publish` copia `logs/` para `local-logs/`, faz `git add -f`, `commit` e `push` automático.
   - `sync-devices.sh` – ler devices.json do MeshCentral e enviar para Supabase.
   - `update_from_github.sh` – sincronização rápida no próprio droplet (fallback).
   - `update_supabase.sh` – operações da Supabase CLI.
@@ -37,6 +38,17 @@ para que o Codex / Softgen consiga continuar o desenvolvimento.
   **"Dispositivos por Adotar"**.
 
 Ver `docs/ROADMAP.md` para detalhes e tarefas abertas.
+
+## Logs
+
+- `logs/` (local apenas):
+  - Guardar tudo o que é gerado no portátil ou descarregado do droplet (incluindo `logs/droplet`).
+  - Ignorado pelo Git para impedir sincronização acidental.
+- `local-logs/` (apenas GitHub):
+  - Recebe ficheiros copiados via `scripts/get-error-log.sh --publish` quando for necessário partilhar logs.
+  - Não deve ser utilizado como pasta de trabalho local; limpa-o depois de publicar se não precisares das cópias.
+
+Pastas antigas como `local-logslocal/` não têm uso e foram removidas.
 
 # rustdesk-mesh-integration
 
