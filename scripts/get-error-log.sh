@@ -30,9 +30,12 @@ fi
 
 LOGS_DIR="$ROOT_DIR/logs"
 LOCAL_DIR="$LOGS_DIR/droplet"
-LOCAL_FILE="${LOCAL_DIR}/app-debug.log"
+SEQUENCE_FILE="$LOGS_DIR/.log-sequence"
+RUN_ID=""
+LOCAL_FILE=""
+LATEST_LINK=""
 REMOTE="${DROPLET_SSH_USER}@${DROPLET_SSH_HOST}:${DROPLET_DEBUG_LOG_PATH}"
-STEP4_PATTERN="$ROOT_DIR/logs/local-logs-*.tar.gz"
+STEP4_PATTERN="$ROOT_DIR/logs/archive/local-logs-*.tar.gz"
 STEP4_TARGET=""
 TARGET_DIR="$ROOT_DIR/local-logs"
 PUBLISH=${PUBLISH:-0}
@@ -66,11 +69,27 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+next_sequence() {
+  local current=0
+  if [[ -f "$SEQUENCE_FILE" ]]; then
+    current=$(cat "$SEQUENCE_FILE" 2>/dev/null || echo 0)
+  fi
+  current=$((current + 1))
+  echo "$current" >"$SEQUENCE_FILE"
+  printf "%04d" "$current"
+}
+
+RUN_ID="$(next_sequence)"
+LOCAL_FILE="${LOCAL_DIR}/run-${RUN_ID}-app-debug.log"
+LATEST_LINK="${LOCAL_DIR}/latest-app-debug.log"
+
 mkdir -p "$LOCAL_DIR"
 
-echo "[get-error-log] Copying ${REMOTE} -> ${LOCAL_FILE}"
+echo "[get-error-log] (run-id: $RUN_ID) Copying ${REMOTE} -> ${LOCAL_FILE}"
 if scp "$REMOTE" "$LOCAL_FILE"; then
-  echo "[get-error-log] Log retrieved successfully into $LOCAL_DIR."
+  ln -sfn "$(basename "$LOCAL_FILE")" "$LATEST_LINK"
+  echo "[get-error-log] Log retrieved successfully into $LOCAL_DIR." \
+       "Latest pointer updated: $LATEST_LINK -> $(basename "$LOCAL_FILE")"
 else
   echo "[get-error-log] Failed to retrieve log from droplet." >&2
   exit 1
@@ -83,9 +102,12 @@ shopt -u nullglob
 if (( ${#step4_candidates[@]} > 0 )); then
   step4_latest=$(ls -t "${step4_candidates[@]}" | head -n 1)
   step4_basename="$(basename "$step4_latest")"
-  STEP4_TARGET="${LOCAL_DIR}/${step4_basename}"
+  STEP4_TARGET="${LOCAL_DIR}/run-${RUN_ID}-${step4_basename}"
+  STEP4_LATEST_LINK="${LOCAL_DIR}/latest-local-logs.tar.gz"
   cp "$step4_latest" "$STEP4_TARGET"
-  echo "[get-error-log] Found Step-4 archive: ${step4_latest}. Copied to ${STEP4_TARGET}."
+  ln -sfn "$(basename "$STEP4_TARGET")" "$STEP4_LATEST_LINK"
+  echo "[get-error-log] Found Step-4 archive: ${step4_latest}. Copied to ${STEP4_TARGET}." \
+       "Latest pointer updated: $STEP4_LATEST_LINK -> $(basename "$STEP4_TARGET")"
 else
   echo "[get-error-log] Warning: No Step-4 archive found. Skipping."
 fi
