@@ -48,7 +48,7 @@ rsync -avz --delete --checksum --itemize-changes \
   "$ROOT_DIR/" "$SSH_TARGET:$REMOTE_DIR/"
 
 log "Reiniciar serviço no droplet usando artefactos existentes (sem recompilar)"
-ssh "$SSH_TARGET" bash -s <<'EOF2'
+ssh "$SSH_TARGET" REMOTE_DIR="$REMOTE_DIR" bash -s <<'EOF2'
 set -euo pipefail
 cd "$REMOTE_DIR"
 
