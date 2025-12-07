@@ -1,7 +1,16 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import packageJson from "../../package.json";
+
+const APP_VERSION =
+  process.env.NEXT_PUBLIC_APP_VERSION ?? packageJson.version ?? "unknown";
+const APP_BUILD =
+  process.env.NEXT_PUBLIC_APP_BUILD ||
+  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ||
+  process.env.NEXT_PUBLIC_GIT_COMMIT_SHA ||
+  "dev";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -9,6 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("Admin123!");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const buildLabel = useMemo(() => APP_BUILD.slice(0, 7), []);
 
   // Se já houver token em localStorage, vai directo para o dashboard
   useEffect(() => {
@@ -79,6 +89,10 @@ export default function LoginPage() {
         <h1 className="text-2xl font-semibold mb-6 text-center">
           RustDesk Android Support
         </h1>
+
+        <p className="text-xs text-slate-300 text-center mb-6">
+          Versão {APP_VERSION} · Build {buildLabel}
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
