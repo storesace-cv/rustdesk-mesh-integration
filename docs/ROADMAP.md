@@ -13,6 +13,7 @@ Este ficheiro serve de guia para o Codex / Softgen.ai continuar o trabalho.
     - Chama Edge Function `login` em `functions/v1/login`.
     - Usa `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
     - Guarda o `token` JWT em `localStorage` (`rustdesk_jwt`).
+    - Mostra versão e build actual da aplicação para confirmar deploy mais recente.
   - `/dashboard` – página principal:
     - Lê o `rustdesk_jwt` do `localStorage`.
     - Gera QR-Code com:
