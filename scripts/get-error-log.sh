@@ -153,13 +153,38 @@ if (( PUBLISH == 1 )); then
   git commit -m "$COMMIT_MESSAGE" -- "$TARGET_DIR"
 
   current_branch=$(git rev-parse --abbrev-ref HEAD)
-  if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
-    git push
-  else
-    git push -u origin "$current_branch"
-  fi
 
-  echo "[get-error-log] Published logs to GitHub on branch ${current_branch}."
+  push_with_rebase_if_needed() {
+    local branch="$1"
+
+    # Sync remote refs so "behind" detection is accurate
+    if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
+      git fetch --prune
+    fi
+
+    if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
+      if git push; then
+        return 0
+      fi
+
+      if git status -sb | grep -q "behind"; then
+        echo "[get-error-log] Branch is behind upstream. Attempting git pull --rebase --autostash..." >&2
+        git pull --rebase --autostash
+        git push
+      else
+        echo "[get-error-log] Push failed for an unknown reason. Please check git status manually." >&2
+        return 1
+      fi
+    else
+      git push -u origin "$branch"
+    fi
+  }
+
+  if push_with_rebase_if_needed "$current_branch"; then
+    echo "[get-error-log] Published logs to GitHub on branch ${current_branch}."
+  else
+    exit 1
+  fi
 else
   echo "[get-error-log] Publishing skipped (--no-publish/PUBLISH=0). Logs stored locally under ./logs."
 fi
