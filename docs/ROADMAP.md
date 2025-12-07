@@ -187,10 +187,10 @@ Tarefas:
 
 ### 3.1 update_from_github.sh (local / droplet)
 
-- [ ] Objectivo: tornar `my-rustdesk-mesh-integration` uma cópia exacta de `origin/main`.
-- [ ] Comportamento: `git fetch --prune`, checkout/criação do branch, `git reset --hard origin/main` seguido de `git clean -fd`.
-- [ ] Salvaguardas: falha se existirem alterações não commitadas (usar `ALLOW_DIRTY_RESET=1` para forçar).
-- [ ] Uso: corre na raiz do repositório; não faz push.
+- [x] Objectivo: tornar `my-rustdesk-mesh-integration` uma cópia exacta de `origin/main`.
+- [x] Comportamento: `git fetch --prune`, checkout/criação do branch, `git reset --hard origin/main` seguido de `git clean -fd`.
+- [x] Salvaguardas: falha se existirem alterações não commitadas **incluindo ficheiros não rastreados** (usar `ALLOW_DIRTY_RESET=1` para forçar) e se houver merges/rebases/conflitos pendentes.
+- [x] Uso: corre na raiz do repositório; não faz push.
 
 ### 3.2 update_supabase.sh (local)
 

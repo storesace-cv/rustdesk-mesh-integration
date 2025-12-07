@@ -32,8 +32,9 @@ if git ls-files -u --error-unmatch >/dev/null 2>&1; then
 fi
 
 if [[ "$ALLOW_DIRTY_RESET" != "1" ]]; then
-  if ! git diff-index --quiet HEAD --; then
-    log "ERRO: existem alterações não commitadas em ficheiros rastreados. Exporta ALLOW_DIRTY_RESET=1 para forçar reset hard."
+  status_output=$(git status --porcelain)
+  if [[ -n "$status_output" ]]; then
+    log "ERRO: existem alterações não commitadas (inclui ficheiros não rastreados). Exporta ALLOW_DIRTY_RESET=1 para forçar reset hard."
     exit 1
   fi
 fi

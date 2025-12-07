@@ -18,7 +18,7 @@ para que o Codex / Softgen consiga continuar o desenvolvimento.
   - `register-device`
   - `remove-device`
 - `scripts/` – Scripts auxiliares (fluxo Step-* obrigatório):
-  - `Step-1-download-from-main.sh` – obtém `origin/main` e sincroniza a branch de testes local; falha de forma amigável se existirem merges/rebases pendentes ou ficheiros em conflito, para que resolvas antes de descarregar.
+  - `Step-1-download-from-main.sh` – obtém `origin/main` e sincroniza a branch de testes local; falha de forma amigável se existirem merges/rebases pendentes, ficheiros em conflito **ou ficheiros não rastreados/alterações locais** (a menos que exportes `ALLOW_DIRTY_RESET=1`), para que resolves antes de descarregar.
   - `Step-2-build-local.sh` – instala dependências e gera o build local.
   - `Step-3-test-local.sh` – corre lint + testes no portátil.
   - `Step-4-deploy-tested-build.sh` – envia o build já testado para o droplet e reinicia o serviço sem recompilar.
