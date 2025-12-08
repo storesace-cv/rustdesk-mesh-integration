@@ -1,4 +1,4 @@
-// generate-qr-image
+/* generate-qr-image */
 
 [
   {
@@ -195,7 +195,7 @@
   }
 ]
 
-get-devices
+/* get-devices */
 
 [
   {
