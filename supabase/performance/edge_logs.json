@@ -1,0 +1,410 @@
+generate-qr-image
+
+[
+  {
+    "event_message": "shutdown",
+    "event_type": "Shutdown",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "3b58b37e-5bed-40cd-b9f6-8be314646c2f",
+    "level": "log",
+    "timestamp": 1765218408033000
+  },
+  {
+    "event_message": "shutdown",
+    "event_type": "Shutdown",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "dc6da368-e5ec-4f9a-b5cb-6b1ee68c4467",
+    "level": "log",
+    "timestamp": 1765218407851000
+  },
+  {
+    "event_message": "[generate-qr-image] Unhandled error: TypeError: QRCode.toBuffer is not a function\n    at Server.handler (file:///var/tmp/sb-compile-edge-runtime/generate-qr-image/index.ts:96:35)\n    at eventLoopTick (ext:core/01_core.js:175:7)\n    at async Server.#respond (https://deno.land/std@0.168.0/http/server.ts:221:18)\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "e5e3f874-0fea-41ad-9a0a-2f6d6ff4b08f",
+    "level": "error",
+    "timestamp": 1765218333375000
+  },
+  {
+    "event_message": "[generate-qr-image] User authenticated: f5384288-837e-41fc-aa08-0020c1bafdec\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "f4199920-7693-4d4a-8fcb-6b0e0799922a",
+    "level": "info",
+    "timestamp": 1765218333373000
+  },
+  {
+    "event_message": "[generate-qr-image] Config string: config={\"host\":\"rustdesk.bwb.pt\",\"relay\":\"rustdesk.bwb.pt\",\"key\":\"Rs16v4T5zElCIsxbcAn39LwRYniVi5EQbXAgLVqWFYk=\"}\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "bc8e196e-9721-449f-8d0d-9963b79e6d17",
+    "level": "info",
+    "timestamp": 1765218333373000
+  },
+  {
+    "event_message": "[generate-qr-image] Validating JWT...\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "5416bf8a-fc07-4005-8596-4ec7fcd15c67",
+    "level": "info",
+    "timestamp": 1765218333015000
+  },
+  {
+    "event_message": "[generate-qr-image] Request received: GET\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "ffcdc0c8-3e36-447d-9be5-cf6d0924cd61",
+    "level": "info",
+    "timestamp": 1765218333014000
+  },
+  {
+    "event_message": "Listening on http://localhost:9999/\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "19f4038f-521d-468f-828b-8d887c81a167",
+    "level": "info",
+    "timestamp": 1765218333013000
+  },
+  {
+    "event_message": "booted (time: 23ms)",
+    "event_type": "Boot",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "1454727e-4019-4c01-a9b5-459615109388",
+    "level": "log",
+    "timestamp": 1765218333010000
+  },
+  {
+    "event_message": "[generate-qr-image] Request received: OPTIONS\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "c28ebccf-16e8-4d47-8f50-925c3acd3778",
+    "level": "info",
+    "timestamp": 1765218332848000
+  },
+  {
+    "event_message": "Listening on http://localhost:9999/\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "f7c030aa-5f32-410c-ac0e-f61d64525e4b",
+    "level": "info",
+    "timestamp": 1765218332830000
+  },
+  {
+    "event_message": "booted (time: 33ms)",
+    "event_type": "Boot",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "00c11f17-58fa-4a4f-9ddc-00c6f82f70bf",
+    "level": "log",
+    "timestamp": 1765218332825000
+  },
+  {
+    "event_message": "shutdown",
+    "event_type": "Shutdown",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "ecec34e9-556b-42ee-988e-395a97168b23",
+    "level": "log",
+    "timestamp": 1765218001850000
+  },
+  {
+    "event_message": "shutdown",
+    "event_type": "Shutdown",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "b11f7339-317c-4d1a-9a25-b81cf0e357bf",
+    "level": "log",
+    "timestamp": 1765217948545000
+  },
+  {
+    "event_message": "[generate-qr-image] Unhandled error: TypeError: QRCode.toBuffer is not a function\n    at Server.handler (file:///var/tmp/sb-compile-edge-runtime/generate-qr-image/index.ts:96:35)\n    at eventLoopTick (ext:core/01_core.js:175:7)\n    at async Server.#respond (https://deno.land/std@0.168.0/http/server.ts:221:18)\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "9cf264eb-2c1a-4f99-848d-bb38611f765a",
+    "level": "error",
+    "timestamp": 1765217926996000
+  },
+  {
+    "event_message": "[generate-qr-image] Config string: config={\"host\":\"rustdesk.bwb.pt\",\"relay\":\"rustdesk.bwb.pt\",\"key\":\"Rs16v4T5zElCIsxbcAn39LwRYniVi5EQbXAgLVqWFYk=\"}\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "50572d82-7722-4e6e-8419-2b16892f48cf",
+    "level": "info",
+    "timestamp": 1765217926994000
+  },
+  {
+    "event_message": "[generate-qr-image] User authenticated: f5384288-837e-41fc-aa08-0020c1bafdec\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "7c157151-e942-4678-9666-b65104266aeb",
+    "level": "info",
+    "timestamp": 1765217926993000
+  },
+  {
+    "event_message": "[generate-qr-image] Request received: GET\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "d311f47e-1e4c-43c2-9490-1b41b7ee7011",
+    "level": "info",
+    "timestamp": 1765217926827000
+  },
+  {
+    "event_message": "[generate-qr-image] Validating JWT...\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "6d2804df-4d7b-43f9-a8f2-361a5d74f8d0",
+    "level": "info",
+    "timestamp": 1765217926827000
+  },
+  {
+    "event_message": "Listening on http://localhost:9999/\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "68fa11b6-1741-42f9-86dc-568f79cf48a3",
+    "level": "info",
+    "timestamp": 1765217926825000
+  },
+  {
+    "event_message": "booted (time: 32ms)",
+    "event_type": "Boot",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "6f4fd769-59d1-4135-bdbe-f06df9dc22a4",
+    "level": "log",
+    "timestamp": 1765217926821000
+  },
+  {
+    "event_message": "[generate-qr-image] Request received: OPTIONS\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "b01b1ba9-6ca8-46ef-a33a-5d962c6f3f74",
+    "level": "info",
+    "timestamp": 1765217926476000
+  },
+  {
+    "event_message": "Listening on http://localhost:9999/\n",
+    "event_type": "Log",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "1e578da0-92a1-434c-9f50-42cd0b19afae",
+    "level": "info",
+    "timestamp": 1765217926473000
+  },
+  {
+    "event_message": "booted (time: 24ms)",
+    "event_type": "Boot",
+    "function_id": "a2c87271-a8b5-49fe-ac78-04876643aa16",
+    "id": "f67ea355-f23e-43b2-bbe2-7754001faef0",
+    "level": "log",
+    "timestamp": 1765217926471000
+  }
+]
+
+get-devices
+
+[
+  {
+    "event_message": "shutdown",
+    "event_type": "Shutdown",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "7b62db08-42d3-442e-ad4a-f0f132c25bbf",
+    "level": "log",
+    "timestamp": 1765218408636000
+  },
+  {
+    "event_message": "shutdown",
+    "event_type": "Shutdown",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "c81cdb57-9dca-4b78-8665-0de5f73735cd",
+    "level": "log",
+    "timestamp": 1765218407854000
+  },
+  {
+    "event_message": "[get-devices] Found 0 devices\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "5dea0ca4-7821-4523-bcfc-171bb99b0aa0",
+    "level": "info",
+    "timestamp": 1765218334085000
+  },
+  {
+    "event_message": "[get-devices] Supabase response status: 200\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "2382f1fd-69de-4943-9015-1ca256d17c46",
+    "level": "info",
+    "timestamp": 1765218334085000
+  },
+  {
+    "event_message": "[get-devices] Fetching devices from: https://kqwaibgvmzcqeoctukoy.supabase.co/rest/v1/android_devices?owner=eq.f5384288-837e-41fc-aa08-0020c1bafdec&select=*\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "8601f405-f2f5-432d-ad9c-7f35695bfdb4",
+    "level": "info",
+    "timestamp": 1765218333782000
+  },
+  {
+    "event_message": "[get-devices] User authenticated: f5384288-837e-41fc-aa08-0020c1bafdec\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "1295f31e-fbe7-4459-ba8f-0731c1baf392",
+    "level": "info",
+    "timestamp": 1765218333782000
+  },
+  {
+    "event_message": "[get-devices] Validating JWT...\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "76ca8db6-5845-4c9b-8866-a2acaf513ac7",
+    "level": "info",
+    "timestamp": 1765218333614000
+  },
+  {
+    "event_message": "[get-devices] Request received: GET\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "473e5d1f-f4b5-4542-a3e1-76dce5fe0887",
+    "level": "info",
+    "timestamp": 1765218333614000
+  },
+  {
+    "event_message": "Listening on http://localhost:9999/\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "eac7882d-da52-49ee-a078-d44597009a23",
+    "level": "info",
+    "timestamp": 1765218333612000
+  },
+  {
+    "event_message": "booted (time: 31ms)",
+    "event_type": "Boot",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "cec5d4be-eb0f-416f-9dbe-5cb7ed5ae3a4",
+    "level": "log",
+    "timestamp": 1765218333611000
+  },
+  {
+    "event_message": "[get-devices] Request received: OPTIONS\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "e10c38c3-78d1-4e57-962d-cba6b17a1552",
+    "level": "info",
+    "timestamp": 1765218333442000
+  },
+  {
+    "event_message": "Listening on http://localhost:9999/\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "37c66354-bb94-45ab-a9c7-6bab8abec233",
+    "level": "info",
+    "timestamp": 1765218333374000
+  },
+  {
+    "event_message": "booted (time: 60ms)",
+    "event_type": "Boot",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "6d30dd18-834c-4053-b53b-a4d170f31532",
+    "level": "log",
+    "timestamp": 1765218332827000
+  },
+  {
+    "event_message": "shutdown",
+    "event_type": "Shutdown",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "e1e7aa41-5dd6-408b-ac18-5f63192c5d20",
+    "level": "log",
+    "timestamp": 1765217986154000
+  },
+  {
+    "event_message": "shutdown",
+    "event_type": "Shutdown",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "e71e2b23-c281-436c-92cf-322e5d15f064",
+    "level": "log",
+    "timestamp": 1765217962430000
+  },
+  {
+    "event_message": "[get-devices] Found 0 devices\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "1538bd78-aab4-4436-a4a9-fa21ed58c749",
+    "level": "info",
+    "timestamp": 1765217927507000
+  },
+  {
+    "event_message": "[get-devices] Supabase response status: 200\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "56a5b68e-cfcd-43b1-8597-769fb61432c7",
+    "level": "info",
+    "timestamp": 1765217927507000
+  },
+  {
+    "event_message": "[get-devices] Fetching devices from: https://kqwaibgvmzcqeoctukoy.supabase.co/rest/v1/android_devices?owner=eq.f5384288-837e-41fc-aa08-0020c1bafdec&select=*\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "0152866d-a5e3-4dab-b945-2bbb450fb69f",
+    "level": "info",
+    "timestamp": 1765217926979000
+  },
+  {
+    "event_message": "[get-devices] User authenticated: f5384288-837e-41fc-aa08-0020c1bafdec\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "fa2fe404-7b07-4115-b1de-3ea70a714b03",
+    "level": "info",
+    "timestamp": 1765217926979000
+  },
+  {
+    "event_message": "[get-devices] Validating JWT...\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "061814af-7418-462c-9208-9dffae3b2691",
+    "level": "info",
+    "timestamp": 1765217926729000
+  },
+  {
+    "event_message": "[get-devices] Request received: GET\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "5f58dcca-96d1-476f-b196-44429ec39e07",
+    "level": "info",
+    "timestamp": 1765217926728000
+  },
+  {
+    "event_message": "Listening on http://localhost:9999/\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "68c6f29a-3a1b-4546-a4f9-a2c14a58ee93",
+    "level": "info",
+    "timestamp": 1765217926727000
+  },
+  {
+    "event_message": "booted (time: 31ms)",
+    "event_type": "Boot",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "719be320-ffa2-4f07-bdfe-00f2994dce80",
+    "level": "log",
+    "timestamp": 1765217926725000
+  },
+  {
+    "event_message": "[get-devices] Request received: OPTIONS\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "58be220b-0478-4179-9b1d-db0d95273844",
+    "level": "info",
+    "timestamp": 1765217926491000
+  },
+  {
+    "event_message": "Listening on http://localhost:9999/\n",
+    "event_type": "Log",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "8eaa2925-7423-4c08-a870-81f3ce06ce68",
+    "level": "info",
+    "timestamp": 1765217926488000
+  },
+  {
+    "event_message": "booted (time: 31ms)",
+    "event_type": "Boot",
+    "function_id": "01b24503-848c-4f86-ae6a-06054c380d7b",
+    "id": "540f2a29-b0bb-42a1-af79-b88e58862046",
+    "level": "log",
+    "timestamp": 1765217926488000
+  }
+]
+
